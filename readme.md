@@ -1,0 +1,1 @@
+# Solar Magnetogram Denoising
