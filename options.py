@@ -34,7 +34,7 @@ class option_base():
         self.drange = 100.
         
         self.root_data = '/home/park_e/datasets'
-        self.root_save = '/userhome/park_e/magnetogram_denoising'
+        self.root_save = '/userhome/park_e/solar_magnetogram_denoising'
         
         self.root_ckpt = '%s/%s/ckpt'%(self.root_save, self.mode)
         self.root_snap = '%s/%s/snap'%(self.root_save, self.mode)
