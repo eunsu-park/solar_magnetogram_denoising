@@ -11,4 +11,5 @@ The architectures are based on https://github.com/eunsu-park/solar_euv_generatio
 ## To run this code,
 
 Keras: Change some parameters in option.py (about your environments) and run train.py
+
 TensorFlow2: Change some parameters in denoising_tf2.ipynb and run the notebook
