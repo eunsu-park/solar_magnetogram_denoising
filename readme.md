@@ -1,4 +1,4 @@
-# Solar Magnetogram Denoising (Keras)
+# Solar Magnetogram Denoising (Keras, TensorFlow2)
 
 Park et al., 2019, ApJL, submitted
 
@@ -10,4 +10,5 @@ The architectures are based on https://github.com/eunsu-park/solar_euv_generatio
 
 ## To run this code,
 
-Change some parameters in option.py (about your environments) and run train.py
+Keras: Change some parameters in option.py (about your environments) and run train.py
+TensorFlow2: Change some parameters in denoising_tf2.ipynb and run the notebook
