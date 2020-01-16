@@ -75,8 +75,8 @@ class block_encoder:
         self.nb_feature = nb_feature
         self.use_bn = use_bn
     def __call__(self, x):
-        layer = leaky_relu(0.2) (layer)
-        layer = reflect_padding(1) (x)
+        layer = leaky_relu(0.2) (x)
+        layer = reflect_padding(1) (layer)
         layer = down_conv(self.nb_feature, kernel_size=4, strides=2, padding='valid') (layer)
         if self.use_bn :
             layer = batch_norm() (layer)
