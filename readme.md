@@ -1,8 +1,8 @@
 # Solar Magnetogram Denoising (TensorFlow2)
 
-Park et al., 2019, ApJL, submitted
+Park et al., 2020, ApJL, 891, L4, https://doi.org/10.3847/2041-8213/ab74d2
 
-Title: Denoising SDO/HMI Solar Magnetogram by Deep Learning based on Generative Adversarial Network
+Title: De-noising SDO/HMI Solar Magnetograms by Image Translation Method Based on Deep Learning
 
 ## Network Architectures
 
