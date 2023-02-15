@@ -7,12 +7,12 @@ class TrainOption(BaseOption):
         self.parser.add_argument("--patch_size", type=int, default=256,
             help="size of random patch for training")
 
-        self.parser.add_argument("--noise_min", type=float, default=5,
-            help="minimum value of Gaussian noise standard deviation")
-        self.parser.add_argument("--noise_max", type=float, default=15,
-            help="maxinum value of Gaussian noise standard deviationn")
+        self.parser.add_argument("--noise_loc", type=float, default=0,
+            help="mode value of Gaussian noise")
+        self.parser.add_argument("--noise_scale", type=float, default=10,
+            help="standard deviation value of Gaussian noise")
 
-        self.parser.add_argument("--diffusionsteps", type=int, default=20,
+        self.parser.add_argument("--steps", type=int, default=1000,
             help="# of adding diffusion steps")
         self.parser.add_argument("--beta_start", type=float, default=0.0001,
             help="Diffusion beta start value")

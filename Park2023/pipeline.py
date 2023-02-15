@@ -11,9 +11,14 @@ class BaseDataset(data.Dataset):
         self.list_data = glob('%s/fits/*.fits'%(opt.root_data))
         self.nb_data = len(self.list_data)
         self.minmax = opt.minmax
-        self.scale_min = opt.noise_min
-        self.scale_max = opt.noise_max
+        self.noise_loc = opt.noise_loc
+        self.noise_scale = opt.noise_scale
         self.patch_size = opt.patch_size
+        self.beta_start = opt.beta_start
+        self.beta_end = opt.beta_end
+        self.steps = opt.steps
+
+        self.build_diffusion()
 
     def __len__(self):
         return self.nb_data
@@ -31,14 +36,15 @@ class BaseDataset(data.Dataset):
     def numpy2torch(self, data):
         return torch.from_numpy(data.astype(np.float32))
 
-    def get_gaussian_noise(self, size):
-        scale = np.random.uniform(
-            self.scale_min, self.scale_max)
-        noise = np.random.normal(loc=0, scale=scale, size=size)
-        return noise
+    def get_gaussian(self, size):
+        return np.random.normal(loc=self.noise_loc, scale=self.noise_scale, size=size)
+
+    def add_gaussian(self, data):
+        noise = self.get_gaussian(data.shape)
+        return noise + data
 
     def build_diffusion(self):
-        betas = np.linspace(self.beta_start, self.beta_end, self.diffusionsteps)
+        betas = np.linspace(self.beta_start, self.beta_end, self.steps)
         alphas = 1. - betas
         alphas_cumprod = np.cumprod(alphas, axis=0)
         self.sqrt_alphas_cumprod = np.sqrt(alphas_cumprod)
@@ -49,83 +55,38 @@ class BaseDataset(data.Dataset):
         out = np.take(a, t, -1)
         return out.reshape(batch_size, *((1,) * (len(x_shape) - 1)))
 
-    def add_diffusion(self, data_start, t, noise=None):
-        if noise is None:
-            noise = get_noise(0, 1, data_start.shape)
-        sqrt_alphas_cumprod_t = self.extract(self.sqrt_alphas_cumprod, np.array([t]), data_start.shape)
+    def add_diffusion(self, data):
+        t = np.random.randint(self.steps)
+        noise = self.get_gaussian(data.shape)
+        sqrt_alphas_cumprod_t = self.extract(self.sqrt_alphas_cumprod, np.array([t]), data.shape)
         sqrt_one_minus_alphas_cumprod_t = self.extract(
-            self.sqrt_one_minus_alphas_cumprod, np.array([t]), data_start.shape)
-        return sqrt_alphas_cumprod_t * data_start + sqrt_one_minus_alphas_cumprod_t * noise
-
-
-
+            self.sqrt_one_minus_alphas_cumprod, np.array([t]), data.shape)
+        return sqrt_alphas_cumprod_t * data + sqrt_one_minus_alphas_cumprod_t * noise
 
     def __getitem__(self, idx):
         data = self.read_fits(self.list_data[idx])
         patch = self.random_crop(data)[None, :, :]
+        gaussian = self.add_gaussian(patch.copy())
+        diffusion = self.add_diffusion(patch.copy())
+
         patch = self.normalize(patch)
         patch = self.numpy2torch(patch)
 
-        noise = self.get_noise(patch.shape)
-        noise = self.normalize(noise)
-        noise = self.numpy2torch(noise)
-        return patch, noise
+        gaussian = self.normalize(gaussian)
+        gaussian = self.numpy2torch(gaussian)
 
-#     def build_diffusion(self):
-#         betas = np.linspace(self.beta_start, self.beta_end, self.diffusionsteps)
-#         alphas = 1. - betas
-#         alphas_cumprod = np.cumprod(alphas, axis=0)
-#         self.sqrt_alphas_cumprod = np.sqrt(alphas_cumprod)
-#         self.sqrt_one_minus_alphas_cumprod = np.sqrt(1. - alphas_cumprod)
+        diffusion = self.normalize(diffusion)
+        diffusion = self.numpy2torch(diffusion)
 
-#     def extract(self, a, t, x_shape):
-#         batch_size = t.shape[0]
-#         out = np.take(a, t, -1)
-#         return out.reshape(batch_size, *((1,) * (len(x_shape) - 1)))
-
-#     def add_diffusion(self, data_start, t, noise=None):
-#         if noise is None:
-#             noise = get_noise(0, 1, data_start.shape)
-#         sqrt_alphas_cumprod_t = self.extract(self.sqrt_alphas_cumprod, np.array([t]), data_start.shape)
-#         sqrt_one_minus_alphas_cumprod_t = self.extract(
-#             self.sqrt_one_minus_alphas_cumprod, np.array([t]), data_start.shape)
-#         return sqrt_alphas_cumprod_t * data_start + sqrt_one_minus_alphas_cumprod_t * noise
-
-#     def __getitem__(self, idx):
-#         data = self.read_fits(self.list_data[idx])
-#         inps = list()
-#         tars = list()
-#         noises = list()
-
-#         data = self.normalize(data)
-
-#         for _ in range(self.nb_random_patch):
-#             patch = self.random_crop(data)[None, None, :, :]
-#             t = np.random.randint(self.diffusionsteps)
-#             noise = np.random.normal(0, 1, patch.shape)
-#             tar = patch
-#             inp = self.add_diffusion(patch, t, noise)
-#             inps.append(inp)
-#             tars.append(tar)
-#             noises.append(noise)
-
-#         inps = np.concatenate(inps, 0)
-#         tars = np.concatenate(tars, 0)
-#         noises = np.concatenate(noises, 0)
-
-#         inps = self.numpy2torch(inps)
-#         tars = self.numpy2torch(tars)
-#         noises = self.numpy2torch(noises)
-
-#         return inps, tars, noises
-
-
-
-
+        return patch, gaussian, diffusion
 
 if __name__ == "__main__" :
 
     from options.train_option import TrainOption
+    from imageio import imsave
+    import matplotlib.animation as animation
+    import matplotlib.pyplot as plt
+
 
     opt = TrainOption().parse()
 
@@ -133,24 +94,29 @@ if __name__ == "__main__" :
     dataloader = data.DataLoader(dataset, batch_size=4, num_workers=16)
     print(len(dataset), len(dataloader))
 
-    for idx, (patch, noise) in enumerate(dataloader):
-        patch = patch.numpy()
-        noise = noise.numpy()
-        print(idx, patch.dtype, noise.dtype)
+    imgs = []
 
-        if idx == 20 :
+    fig = plt.figure()
+    for idx, (patch, gaussian, diffusion) in enumerate(dataloader):
+        patch = patch.numpy()
+        gaussian = gaussian.numpy()
+        diffusion = diffusion.numpy()
+        print(idx, patch.dtype, gaussian.dtype, diffusion.dtype)
+
+        patch = patch[0][0]
+        gaussian = gaussian[0][0]
+        diffusion = diffusion[0][0]
+        img = np.hstack([patch, gaussian, diffusion])
+        img = img * opt.minmax
+        img = (img + 30.) * (255./60.)
+        img = np.clip(img, 0, 255).astype(np.uint8)
+
+        plot = plt.imshow(img, cmap='gray', animated=True)
+        imgs.append([plot])
+
+        if idx == 100 :
             break
 
-    from imageio import imsave
-
-    patch = patch[0][0]
-    noise = noise[0][0]
-    inp = patch.copy() + noise
-    tar = patch.copy()
-
-    img = np.hstack([inp, tar, noise])
-    print(img.shape)
-    img = img * opt.minmax
-    img = (img + 30.) * (255./60.)
-    img = np.clip(img, 0, 255).astype(np.uint8)
-    imsave("img.png", img)
+    animate = animation.ArtistAnimation(fig, imgs, blit=True)
+    animate.save('img.gif')
+    plt.close()
