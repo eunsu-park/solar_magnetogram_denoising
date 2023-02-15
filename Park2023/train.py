@@ -3,30 +3,8 @@ from options.train_option import TrainOption
 import numpy as np
 import random
 import torch
-import torch.nn as nn
-from torch.utils import data
-
-import os, time
-from imageio import imsave
-import matplotlib.pyplot as plt
-
-import math
-from inspect import isfunction
-from functools import partial
-
-import matplotlib.pyplot as plt
-from tqdm.auto import tqdm
-from einops import rearrange, reduce
-from einops.layers.torch import Rearrange
-
-import torch
-from torch import nn, einsum
-import torch.nn.functional as F
-
-
 
 opt = TrainOption().parse()
-
 np.random.seed(opt.seed)
 random.seed(opt.seed)
 torch.manual_seed(opt.seed)
@@ -34,6 +12,13 @@ torch.cuda.manual_seed(opt.seed)
 torch.cuda.manual_seed_all(opt.seed)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
+
+
+import torch.nn as nn
+from torch.utils import data as data
+
+import os, time
+from imageio import imsave
 
 os.environ["CUDA_VISIBLE_DEVICES"] = opt.gpu_ids
 cuda = torch.cuda.device_count() > 0
@@ -43,23 +28,20 @@ print(cuda, ngpu)
 
 path_model = "%s/model" % (opt.root_save)
 path_snap = "%s/snap" % (opt.root_save)
-
 os.makedirs(path_model, exist_ok=True)
 os.makedirs(path_snap, exist_ok=True)
 
 
 ## Load Dataset ## 
-
 from pipeline import BaseDataset
-
 dataset = BaseDataset(opt)
 dataloader = data.DataLoader(
     dataset, batch_size=opt.batch_size,
     num_workers=opt.num_workers, shuffle=True)
 print(len(dataset), len(dataloader))
 
-## Load Model ## 
 
+## Load Model ## 
 from models.pix2pix_unet import UnetGenerator as PUNet, init_weights
 
 network_simple = PUNet(opt.ch_inp, opt.ch_tar, 6, 64)
@@ -74,65 +56,6 @@ if ngpu > 1 :
 
 network_simple.to(device)
 network_diffusion.to(device)
-
-# ## Diffusion Setting ## 
-
-# from utils.beta_schedules import linear_beta_schedule, cosine_beta_schedule, quadratic_beta_schedule, sigmoid_beta_schedule
-# betas = linear_beta_schedule(timesteps=opt.diffusionsteps)
-
-# from utils.diffusion import get_params, extract
-# sqrt_recip_alphas, sqrt_alphas_cumprod, sqrt_one_minus_alphas_cumprod, posterior_variance = get_params(betas)
-
-
-# def q_sample(x_start, t, noise=None):
-#     if noise is None:
-#         noise = torch.randn_like(x_start)
-#     sqrt_alphas_cumprod_t = extract(sqrt_alphas_cumprod, t, x_start.shape)
-#     sqrt_one_minus_alphas_cumprod_t = extract(
-#         sqrt_one_minus_alphas_cumprod, t, x_start.shape
-#     )
-#     return sqrt_alphas_cumprod_t * x_start + sqrt_one_minus_alphas_cumprod_t * noise
-
-
-# @torch.no_grad()
-# def p_sample(model, x, t, t_index):
-#     betas_t = extract(betas, t, x.shape)
-#     sqrt_one_minus_alphas_cumprod_t = extract(
-#         sqrt_one_minus_alphas_cumprod, t, x.shape
-#     )
-#     sqrt_recip_alphas_t = extract(sqrt_recip_alphas, t, x.shape)
-    
-#     # Equation 11 in the paper
-#     # Use our model (noise predictor) to predict the mean
-#     model_mean = sqrt_recip_alphas_t * (
-#         x - betas_t * model(x, t) / sqrt_one_minus_alphas_cumprod_t
-#     )
-
-#     if t_index == 0:
-#         return model_mean
-#     else:
-#         posterior_variance_t = extract(posterior_variance, t, x.shape)
-#         noise = torch.randn_like(x)
-#         # Algorithm 2 line 4:
-#         return model_mean + torch.sqrt(posterior_variance_t) * noise
-
-# @torch.no_grad()
-# def p_sample_loop(model, img):
-#     device = next(model.parameters()).device
-
-#     b = img.shape[0]
-#     # start from pure noise (for each example in the batch)
-#     #img = torch.randn(shape, device=device)
-#     imgs = []
-
-#     for i in tqdm(reversed(range(0, opt.diffusionsteps)), desc='sampling loop time step', total=opt.diffusionsteps):
-#         img = p_sample(model, img, torch.full((b,), i, device=device, dtype=torch.long), i)
-#         imgs.append(img.cpu().numpy())
-#     return imgs
-
-# @torch.no_grad()
-# def sample(model, img):
-#     return p_sample_loop(model, img)
 
 @torch.no_grad()
 def generation(model, inp):

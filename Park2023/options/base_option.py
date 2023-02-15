@@ -7,7 +7,7 @@ class BaseOption():
 
         self.parser.add_argument("--seed", type=int, default=2331,
             help="random seed")
-        self.parser.add_argument("--gpu_ids", type=str, default="0",
+        self.parser.add_argument("--gpu_ids", type=str, default="",
             help="gpu id, ex) 0,2,3")
         self.parser.add_argument("--ch_inp", type=int, default=1,
             help="number of input channel")

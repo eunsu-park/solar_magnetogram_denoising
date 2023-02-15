@@ -45,5 +45,5 @@ class TrainOption(BaseOption):
         self.parser.add_argument("--nb_epochs_decay", type=int, default=10,
             help="# of epochs with linearly decaying learning rate")
 
-        self.parser.add_argument("--report_freq", type=int, default=1000,
+        self.parser.add_argument("--report_freq", type=int, default=100,
             help="report frequency in iterations")
