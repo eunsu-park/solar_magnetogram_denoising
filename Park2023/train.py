@@ -61,10 +61,9 @@ print(len(dataset), len(dataloader))
 ## Load Model ## 
 
 from models.pix2pix_unet import UnetGenerator as PUNet, init_weights
-from models.diffusion_unet import Unet as DUNet
 
 network_simple = PUNet(opt.ch_inp, opt.ch_tar, 6, 64)
-network_diffusion = DUNet(dim=opt.patch_size, channels=opt.ch_inp, dim_mults=(1, 2, 4,))
+network_diffusion = PUNet(opt.ch_inp, opt.ch_tar, 6, 64)
 
 init_weights(network_simple)
 init_weights(network_diffusion)
@@ -76,64 +75,72 @@ if ngpu > 1 :
 network_simple.to(device)
 network_diffusion.to(device)
 
-## Diffusion Setting ## 
+# ## Diffusion Setting ## 
 
-from utils.beta_schedules import linear_beta_schedule, cosine_beta_schedule, quadratic_beta_schedule, sigmoid_beta_schedule
-betas = linear_beta_schedule(timesteps=opt.diffusionsteps)
+# from utils.beta_schedules import linear_beta_schedule, cosine_beta_schedule, quadratic_beta_schedule, sigmoid_beta_schedule
+# betas = linear_beta_schedule(timesteps=opt.diffusionsteps)
 
-from utils.diffusion import get_params, extract
-sqrt_recip_alphas, sqrt_alphas_cumprod, sqrt_one_minus_alphas_cumprod, posterior_variance = get_params(betas)
-
-
-def q_sample(x_start, t, noise=None):
-    if noise is None:
-        noise = torch.randn_like(x_start)
-    sqrt_alphas_cumprod_t = extract(sqrt_alphas_cumprod, t, x_start.shape)
-    sqrt_one_minus_alphas_cumprod_t = extract(
-        sqrt_one_minus_alphas_cumprod, t, x_start.shape
-    )
-    return sqrt_alphas_cumprod_t * x_start + sqrt_one_minus_alphas_cumprod_t * noise
+# from utils.diffusion import get_params, extract
+# sqrt_recip_alphas, sqrt_alphas_cumprod, sqrt_one_minus_alphas_cumprod, posterior_variance = get_params(betas)
 
 
-@torch.no_grad()
-def p_sample(model, x, t, t_index):
-    betas_t = extract(betas, t, x.shape)
-    sqrt_one_minus_alphas_cumprod_t = extract(
-        sqrt_one_minus_alphas_cumprod, t, x.shape
-    )
-    sqrt_recip_alphas_t = extract(sqrt_recip_alphas, t, x.shape)
+# def q_sample(x_start, t, noise=None):
+#     if noise is None:
+#         noise = torch.randn_like(x_start)
+#     sqrt_alphas_cumprod_t = extract(sqrt_alphas_cumprod, t, x_start.shape)
+#     sqrt_one_minus_alphas_cumprod_t = extract(
+#         sqrt_one_minus_alphas_cumprod, t, x_start.shape
+#     )
+#     return sqrt_alphas_cumprod_t * x_start + sqrt_one_minus_alphas_cumprod_t * noise
+
+
+# @torch.no_grad()
+# def p_sample(model, x, t, t_index):
+#     betas_t = extract(betas, t, x.shape)
+#     sqrt_one_minus_alphas_cumprod_t = extract(
+#         sqrt_one_minus_alphas_cumprod, t, x.shape
+#     )
+#     sqrt_recip_alphas_t = extract(sqrt_recip_alphas, t, x.shape)
     
-    # Equation 11 in the paper
-    # Use our model (noise predictor) to predict the mean
-    model_mean = sqrt_recip_alphas_t * (
-        x - betas_t * model(x, t) / sqrt_one_minus_alphas_cumprod_t
-    )
+#     # Equation 11 in the paper
+#     # Use our model (noise predictor) to predict the mean
+#     model_mean = sqrt_recip_alphas_t * (
+#         x - betas_t * model(x, t) / sqrt_one_minus_alphas_cumprod_t
+#     )
 
-    if t_index == 0:
-        return model_mean
-    else:
-        posterior_variance_t = extract(posterior_variance, t, x.shape)
-        noise = torch.randn_like(x)
-        # Algorithm 2 line 4:
-        return model_mean + torch.sqrt(posterior_variance_t) * noise
+#     if t_index == 0:
+#         return model_mean
+#     else:
+#         posterior_variance_t = extract(posterior_variance, t, x.shape)
+#         noise = torch.randn_like(x)
+#         # Algorithm 2 line 4:
+#         return model_mean + torch.sqrt(posterior_variance_t) * noise
+
+# @torch.no_grad()
+# def p_sample_loop(model, img):
+#     device = next(model.parameters()).device
+
+#     b = img.shape[0]
+#     # start from pure noise (for each example in the batch)
+#     #img = torch.randn(shape, device=device)
+#     imgs = []
+
+#     for i in tqdm(reversed(range(0, opt.diffusionsteps)), desc='sampling loop time step', total=opt.diffusionsteps):
+#         img = p_sample(model, img, torch.full((b,), i, device=device, dtype=torch.long), i)
+#         imgs.append(img.cpu().numpy())
+#     return imgs
+
+# @torch.no_grad()
+# def sample(model, img):
+#     return p_sample_loop(model, img)
 
 @torch.no_grad()
-def p_sample_loop(model, img):
-    device = next(model.parameters()).device
+def generation(model, inp):
+    return model(inp)
 
-    b = img.shape[0]
-    # start from pure noise (for each example in the batch)
-    #img = torch.randn(shape, device=device)
-    imgs = []
-
-    for i in tqdm(reversed(range(0, opt.diffusionsteps)), desc='sampling loop time step', total=opt.diffusionsteps):
-        img = p_sample(model, img, torch.full((b,), i, device=device, dtype=torch.long), i)
-        imgs.append(img.cpu().numpy())
-    return imgs
-
-@torch.no_grad()
-def sample(model, img):
-    return p_sample_loop(model, img)
+def hstack(tarray, nb=4):
+    narray = tarray.cpu().numpy()
+    return [narray[n][0] for n in range(nb)] 
 
 
 def lambda_rule(epoch):
@@ -171,29 +178,27 @@ t0 = time.time()
 epochs_max = opt.nb_epochs + opt.nb_epochs_decay
 
 while epochs < epochs_max :
-    for idx, (patch_, noise_) in enumerate(dataloader):
+    for idx, (patch_, gaussian_, diffusion_) in enumerate(dataloader):
 
         optim_simple.zero_grad()
-        inp = (patch_.clone() + noise_.clone()).to(device)
-        tar = (noise_.clone()).to(device)
-        pred = network_simple(inp)
-        loss = loss_function(pred, tar)
-        metric = metric_function(pred, tar)
+        inp = gaussian_.clone().to(device)
+        tar = patch_.clone().to(device)
+        gen = network_simple(inp)
+        loss = loss_function(gen, tar)
+        metric = metric_function(gen, tar)
         loss.backward()
         optim_simple.step()
         losses_simple.append(loss.item())
         metrics_simple.append(metric.item())
 
         optim_diffusion.zero_grad()
-        t = torch.randint(0, opt.diffusionsteps, (opt.batch_size,), device=device).long()
-        batch = patch_.clone().to(device)
-        tar = noise_.clone().to(device)
-        inp = q_sample(x_start=batch, t=t, noise=tar)
-        pred = network_diffusion(inp, t)
-        loss = loss_function(pred, tar)
-        metric = metric_function(pred, tar)
+        inp = diffusion_.clone().to(device)
+        tar = patch_.clone().to(device)
+        gen = network_diffusion(inp)
+        loss = loss_function(gen, tar)
+        metric = metric_function(gen, tar)
         loss.backward()
-        optim_diffusion.step()
+        optim_simple.step()
         losses_diffusion.append(loss.item())
         metrics_diffusion.append(metric.item())
 
@@ -208,36 +213,22 @@ while epochs < epochs_max :
             paint_diffusion = (np.mean(losses_diffusion), np.mean(metrics_diffusion))
             print(palette_diffusion % paint_diffusion)
 
-            network_simple.eval()
-            network_diffusion.eval()
+            inp = patch_.clone().to(device)
+            gen_simple = generation(network_simple, inp)
+            gen_diffusion = generation(network_diffusion, inp)
+            
+            inp = hstack(inp)
+            gen_simple = hstack(gen_simple)
+            gen_diffusion = hstack(gen_diffusion)
 
-            inp = (patch_[0:1].clone() + noise_[0:1].clone()).to(device)
-            pred = network_simple(inp)
-            denoised_simple = inp - pred
+            noise_simple = inp - gen_simple
+            noise_diffusion = inp - gen_diffusion
 
-            inp = (patch_[0:1].clone() + noise_[0:1].clone()).to(device)
-            noise = noise_.clone().to(device)
-            denoised_diffusion_all = np.concatenate(sample(network_diffusion, inp), 0)
-
-            inp = inp[0][0].detach().cpu().numpy()
-            denoised_simple = denoised_simple[0][0].detach().cpu().numpy()
-            denoised_diffusion = denoised_diffusion_all[0][0]
-
-            snap = np.hstack([inp, denoised_simple, denoised_diffusion])
+            snap = np.vstack([inp, gen_simple, noise_simple, gen_diffusion, noise_diffusion])
             snap = snap * opt.minmax
             snap = (snap + 30.) * (255./60.)
             snap = np.clip(snap, 0, 255).astype(np.uint8)
             imsave("./train_latest.png", snap)
-
-            for n in range(opt.diffusionsteps):
-                snap = denoised_diffusion_all[n][0]
-                snap = snap * opt.minmax
-                snap = (snap + 30.) * (255./60.)
-                snap = np.clip(snap, 0, 255).astype(np.uint8)
-                imsave("./diffusion_latest/%04d.png"%(n), snap)
-
-            network_simple.train()
-            network_diffusion.train()
 
             losses_simple = []
             metrics_simple = []

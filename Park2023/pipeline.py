@@ -13,6 +13,7 @@ class BaseDataset(data.Dataset):
         self.minmax = opt.minmax
         self.noise_loc = opt.noise_loc
         self.noise_scale = opt.noise_scale
+        self.scale_range = opt.scale_range
         self.patch_size = opt.patch_size
         self.beta_start = opt.beta_start
         self.beta_end = opt.beta_end
@@ -37,11 +38,13 @@ class BaseDataset(data.Dataset):
         return torch.from_numpy(data.astype(np.float32))
 
     def get_gaussian(self, size):
-        return np.random.normal(loc=self.noise_loc, scale=self.noise_scale, size=size)
+        scale = np.random.uniform(
+            self.noise_scale - self.scale_range, self.noise_scale + self.scale_range)
+        return np.random.normal(loc=self.noise_loc, scale=scale, size=size)
 
     def add_gaussian(self, data):
-        noise = self.get_gaussian(data.shape)
-        return noise + data
+        noise = self.gaussian(data.shape)
+        return data + noise
 
     def build_diffusion(self):
         betas = np.linspace(self.beta_start, self.beta_end, self.steps)
@@ -55,19 +58,30 @@ class BaseDataset(data.Dataset):
         out = np.take(a, t, -1)
         return out.reshape(batch_size, *((1,) * (len(x_shape) - 1)))
 
+    def get_diffusion(self, size):
+        t = np.random.randint(self.steps)
+        noise = np.random.normal(loc=self.noise_loc, scale=self.noise_scale, size=size)
+        sqrt_one_minus_alphas_cumprod_t = self.extract(
+            self.sqrt_one_minus_alphas_cumprod, np.array([t]), size)
+        return sqrt_one_minus_alphas_cumprod_t * noise
+
     def add_diffusion(self, data):
         t = np.random.randint(self.steps)
-        noise = self.get_gaussian(data.shape)
+        noise = np.random.normal(loc=self.noise_loc, scale=self.noise_scale, size=data.shape)
         sqrt_alphas_cumprod_t = self.extract(self.sqrt_alphas_cumprod, np.array([t]), data.shape)
         sqrt_one_minus_alphas_cumprod_t = self.extract(
             self.sqrt_one_minus_alphas_cumprod, np.array([t]), data.shape)
         return sqrt_alphas_cumprod_t * data + sqrt_one_minus_alphas_cumprod_t * noise
 
+
     def __getitem__(self, idx):
         data = self.read_fits(self.list_data[idx])
         patch = self.random_crop(data)[None, :, :]
-        gaussian = self.add_gaussian(patch.copy())
-        diffusion = self.add_diffusion(patch.copy())
+        gaussian_noise = self.get_gaussian(patch.shape)
+        diffusion_noise = self.get_diffusion(patch.shape)
+        
+        gaussian = patch.copy() + gaussian_noise.copy()
+        diffusion = patch.copy() + diffusion_noise.copy()
 
         patch = self.normalize(patch)
         patch = self.numpy2torch(patch)
@@ -96,7 +110,7 @@ if __name__ == "__main__" :
 
     imgs = []
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(14, 3))
     for idx, (patch, gaussian, diffusion) in enumerate(dataloader):
         patch = patch.numpy()
         gaussian = gaussian.numpy()
@@ -106,9 +120,10 @@ if __name__ == "__main__" :
         patch = patch[0][0]
         gaussian = gaussian[0][0]
         diffusion = diffusion[0][0]
-        img = np.hstack([patch, gaussian, diffusion])
+
+        img = np.hstack([patch, gaussian, gaussian-patch, diffusion, diffusion-patch])
         img = img * opt.minmax
-        img = (img + 30.) * (255./60.)
+        img = (img.copy() + 30.) * (255./60.)
         img = np.clip(img, 0, 255).astype(np.uint8)
 
         plot = plt.imshow(img, cmap='gray', animated=True)
@@ -117,6 +132,6 @@ if __name__ == "__main__" :
         if idx == 100 :
             break
 
-    animate = animation.ArtistAnimation(fig, imgs, blit=True)
+    animate = animation.ArtistAnimation(fig, imgs, interval=500, blit=True)
     animate.save('img.gif')
     plt.close()

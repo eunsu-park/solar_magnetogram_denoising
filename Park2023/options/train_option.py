@@ -11,8 +11,10 @@ class TrainOption(BaseOption):
             help="mode value of Gaussian noise")
         self.parser.add_argument("--noise_scale", type=float, default=10,
             help="standard deviation value of Gaussian noise")
+        self.parser.add_argument("--scale_range", type=float, default=3,
+            help="deviation range noise scale")
 
-        self.parser.add_argument("--steps", type=int, default=1000,
+        self.parser.add_argument("--steps", type=int, default=200,
             help="# of adding diffusion steps")
         self.parser.add_argument("--beta_start", type=float, default=0.0001,
             help="Diffusion beta start value")
@@ -25,7 +27,7 @@ class TrainOption(BaseOption):
         self.parser.add_argument("--metric_type", type=str, default="l2",
             help="metric function for modeltraining monitoring")
 
-        self.parser.add_argument("--batch_size", type=int, default=1,
+        self.parser.add_argument("--batch_size", type=int, default=4,
             help="batch size")
         self.parser.add_argument("--num_workers", type=int, default=16,
             help="# of process for dataloader")
