@@ -8,7 +8,7 @@ import torch.nn.functional as F
 
 class BaseDataset(data.Dataset):
     def __init__(self, opt):
-        self.list_data = glob('%s/fits/*.fits'%(opt.root_data))
+        self.list_data = glob('%s/*.fits'%(opt.root_data))
         self.nb_data = len(self.list_data)
         self.minmax = opt.minmax
         self.noise_loc = opt.noise_loc

@@ -26,8 +26,10 @@ ngpu = torch.cuda.device_count()
 device = torch.device('cuda' if cuda else 'cpu')
 print(cuda, ngpu)
 
-path_model = "%s/model" % (opt.root_save)
-path_snap = "%s/snap" % (opt.root_save)
+
+
+path_model = os.path.join(opt.root_save, "model")
+path_snap = os.path.join(opt.root_save, "snap")
 os.makedirs(path_model, exist_ok=True)
 os.makedirs(path_snap, exist_ok=True)
 
@@ -61,9 +63,9 @@ network_diffusion.to(device)
 def generation(model, inp):
     return model(inp)
 
-def hstack(tarray, nb=4):
+def vstack(tarray, nb=2):
     narray = tarray.cpu().numpy()
-    return [narray[n][0] for n in range(nb)] 
+    return np.vstack([narray[n][0] for n in range(nb)])
 
 
 def lambda_rule(epoch):
@@ -121,7 +123,7 @@ while epochs < epochs_max :
         loss = loss_function(gen, tar)
         metric = metric_function(gen, tar)
         loss.backward()
-        optim_simple.step()
+        optim_diffusion.step()
         losses_diffusion.append(loss.item())
         metrics_diffusion.append(metric.item())
 
@@ -140,14 +142,14 @@ while epochs < epochs_max :
             gen_simple = generation(network_simple, inp)
             gen_diffusion = generation(network_diffusion, inp)
             
-            inp = hstack(inp)
-            gen_simple = hstack(gen_simple)
-            gen_diffusion = hstack(gen_diffusion)
+            inp = vstack(inp)
+            gen_simple = vstack(gen_simple)
+            gen_diffusion = vstack(gen_diffusion)
 
             noise_simple = inp - gen_simple
             noise_diffusion = inp - gen_diffusion
 
-            snap = np.vstack([inp, gen_simple, noise_simple, gen_diffusion, noise_diffusion])
+            snap = np.hstack([inp, gen_simple, noise_simple, gen_diffusion, noise_diffusion])
             snap = snap * opt.minmax
             snap = (snap + 30.) * (255./60.)
             snap = np.clip(snap, 0, 255).astype(np.uint8)

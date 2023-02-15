@@ -1,4 +1,5 @@
 import argparse
+import os
 
 
 class BaseOption():
@@ -7,7 +8,7 @@ class BaseOption():
 
         self.parser.add_argument("--seed", type=int, default=2331,
             help="random seed")
-        self.parser.add_argument("--gpu_ids", type=str, default="",
+        self.parser.add_argument("--gpu_ids", type=str, default="0",
             help="gpu id, ex) 0,2,3")
         self.parser.add_argument("--ch_inp", type=int, default=1,
             help="number of input channel")
@@ -16,10 +17,10 @@ class BaseOption():
         self.parser.add_argument("--minmax", type=float, default=1000,
             help="data normalization factor")
         self.parser.add_argument("--root_data", type=str,
-            default="/DATA/eunsu/denoising/dataset",
+            default=os.path.join("D:/", "denoising", "dataset"),
             help="path to load data")
         self.parser.add_argument("--root_save", type=str,
-            default="/DATA/eunsu/denoising/result",
+            default=os.path.join("D:/", "denoising", "result"),
             help="path to save result")
 
     def parse(self):
