@@ -27,9 +27,9 @@ class TrainOption(BaseOption):
         self.parser.add_argument("--metric_type", type=str, default="l2",
             help="metric function for modeltraining monitoring")
 
-        self.parser.add_argument("--batch_size", type=int, default=1,
+        self.parser.add_argument("--batch_size", type=int, default=4,
             help="batch size")
-        self.parser.add_argument("--num_workers", type=int, default=4,
+        self.parser.add_argument("--num_workers", type=int, default=8,
             help="# of process for dataloader")
 
         self.parser.add_argument("--lr", type=float, default=0.0002,
@@ -40,10 +40,10 @@ class TrainOption(BaseOption):
         self.parser.add_argument("--weight_decay", type=float, default=0.001,
             help="l2 regularization")
 
-        self.parser.add_argument("--nb_epochs", type=int, default=10,
+        self.parser.add_argument("--nb_epochs", type=int, default=50,
             help="# of epochs with initial learning rate")
-        self.parser.add_argument("--nb_epochs_decay", type=int, default=10,
+        self.parser.add_argument("--nb_epochs_decay", type=int, default=50,
             help="# of epochs with linearly decaying learning rate")
 
-        self.parser.add_argument("--report_freq", type=int, default=1000,
+        self.parser.add_argument("--report_freq", type=int, default=100,
             help="report frequency in iterations")

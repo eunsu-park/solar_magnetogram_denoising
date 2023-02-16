@@ -153,6 +153,7 @@ while epochs < epochs_max :
             snap = snap * opt.minmax
             snap = (snap + 30.) * (255./60.)
             snap = np.clip(snap, 0, 255).astype(np.uint8)
+            imsave("%s/%07d.png" % (path_snap, iters), snap)
             imsave("./train_latest.png", snap)
 
             losses_simple = []

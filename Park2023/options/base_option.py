@@ -17,10 +17,10 @@ class BaseOption():
         self.parser.add_argument("--minmax", type=float, default=1000,
             help="data normalization factor")
         self.parser.add_argument("--root_data", type=str,
-            default=os.path.join("D:/", "denoising", "dataset"),
+            default=os.path.join("/", "home", "eunsu", "Drives", "Dataset", "denoising"),
             help="path to load data")
         self.parser.add_argument("--root_save", type=str,
-            default=os.path.join("D:/", "denoising", "result"),
+            default=os.path.join("/", "home", "eunsu", "Drives", "Result", "denoising"),
             help="path to save result")
 
     def parse(self):
