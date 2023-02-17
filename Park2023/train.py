@@ -103,7 +103,7 @@ t0 = time.time()
 epochs_max = opt.nb_epochs + opt.nb_epochs_decay
 
 while epochs < epochs_max :
-    for idx, (patch_, gaussian_, diffusion_) in enumerate(dataloader):
+    for idx, (patch_, noise_, gaussian_, diffusion_) in enumerate(dataloader):
 
         optim_simple.zero_grad()
         inp = gaussian_.clone().to(device)

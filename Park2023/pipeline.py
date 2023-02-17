@@ -5,7 +5,20 @@ from glob import glob
 from sunpy.map import Map
 import torch.nn.functional as F
 from torchvision.transforms import Compose
+from scipy.optimize import curve_fit
+import matplotlib.pyplot as plt
 
+
+def func(x, a, b, c):
+    return a*np.exp(-(x-b)**2/(2*c**2))
+
+
+class FitGaussian(object):
+    def __call__(self, data):
+        tmp = np.histogram(data.flatten(), bins=np.linspace(-30, 30, 61))
+        x = np.linspace(-29.5, 29.5, 60)
+        popt, _ = curve_fit(func, x, tmp[0])
+        return abs(popt[2])
 
 class GenerateGaussian(object):
     def __call__(self, loc, scale, size):
@@ -85,6 +98,7 @@ class BaseDataset(data.Dataset):
 
         self.read_fits = ReadFits()
         self.random_crop = RandomCrop(opt.patch_size)
+        self.fit_gaussian = FitGaussian()
         self.generate_gaussian = GenerateGaussian()
         self.generate_diffusion = GenerateDiffusion(beta_start=opt.beta_start, beta_end=opt.beta_end, steps=opt.steps)
         self.compose = Compose([Normalize(opt.minmax), Cast()])
@@ -95,9 +109,7 @@ class BaseDataset(data.Dataset):
     def __getitem__(self, idx):
         data = self.read_fits(self.list_data[idx])
         patch = self.random_crop(data)[None, :, :]
-        loc = patch.mean()
-        scale = patch.std()
-        noise = self.generate_gaussian(loc, scale, patch.shape)
+        noise = self.generate_gaussian(loc=0, scale=self.fit_gaussian(patch), size=patch.shape)
         gaussian = patch.copy() + noise.copy()
         diffusion = self.generate_diffusion(patch.copy(), noise.copy())
         
@@ -130,7 +142,7 @@ if __name__ == "__main__" :
 
     imgs = []
 
-    fig = plt.figure(figsize=(11, 3))
+    fig = plt.figure(figsize=(13, 3))
     for idx, (patch, noise, gaussian, diffusion) in enumerate(dataloader):
         patch = patch.numpy()
         noise = noise.numpy()
@@ -143,12 +155,13 @@ if __name__ == "__main__" :
         gaussian = gaussian[0][0]
         diffusion = diffusion[0][0]
 
-        img = np.hstack([patch, noise, gaussian, diffusion])
+        img = np.hstack([patch, noise, gaussian, diffusion-patch, diffusion])
         img = img * opt.minmax
         img = (img.copy() + 30.) * (255./60.)
         img = np.clip(img, 0, 255).astype(np.uint8)
 
         plot = plt.imshow(img, cmap='gray', animated=True)
+        plt.tight_layout()
         imgs.append([plot])
 
         if idx == 100 :
