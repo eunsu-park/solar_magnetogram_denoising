@@ -8,16 +8,21 @@ from torchvision.transforms import Compose
 
 
 class GenerateGaussian(object):
+    def __call__(self, loc, scale, size):
+        return np.random.normal(loc=loc, scale=scale, size=size)
+
+class GenerateStackedGaussian(object):
     def __init__(self, loc, scale, steps):
-        self.loc = loc
-        self.scale = scale
+        self.generate_gaussian = GenerateGaussian(loc=loc, scale=scale)
         self.steps = steps
     def __call__(self, data):
+        inp = data.copy()
         step = np.random.randint(self.steps) + 1
-        noise = []
-        for n in range(step) :
-            noise.append(np.random.normal(loc=self.loc, scale=self.scale, size=data.shape))
-        return data + np.sum(noise, 0)
+        for _ in range(step):
+            tar = inp.copy()
+            noise = self.generate_gaussian(tar)
+            inp = tar.copy() + noise
+        return inp, tar
 
 class Normalize(object):
     def __init__(self, minmax):
@@ -59,13 +64,12 @@ class GenerateDiffusion(object):
         out = np.take(a, t, -1)
         return out.reshape(batch_size, *((1,) * (len(x_shape) - 1)))
 
-    def __call__(self, data):
+    def __call__(self, data, noise):
         t = np.random.randint(self.steps)
-        noise = self.generate_gaussian()
         sqrt_alphas_cumprod_t = self.extract(self.sqrt_alphas_cumprod, np.array([t]), data.shape)
         sqrt_one_minus_alphas_cumprod_t = self.extract(
             self.sqrt_one_minus_alphas_cumprod, np.array([t]), data.shape)
-        return noise, sqrt_alphas_cumprod_t * data + sqrt_one_minus_alphas_cumprod_t * noise
+        return sqrt_alphas_cumprod_t * data + sqrt_one_minus_alphas_cumprod_t * noise
 
 
 # class GaussianDataset(BaseDataset):
@@ -81,9 +85,8 @@ class BaseDataset(data.Dataset):
 
         self.read_fits = ReadFits()
         self.random_crop = RandomCrop(opt.patch_size)
-        self.generate_gaussian = GenerateGaussian(loc=opt.noise_loc, scale=opt.noise_scale, steps=1)
-        self.generate_gaussian_stacked = GenerateGaussian(loc=opt.noise_loc, scale=opt.noise_scale, steps=opt.steps)
-        self.generate_diffusion = GenerateDiffusion(beta_start=opt.beta_start, beta_end=self.beta_end, steps=opt.steps)
+        self.generate_gaussian = GenerateGaussian()
+        self.generate_diffusion = GenerateDiffusion(beta_start=opt.beta_start, beta_end=opt.beta_end, steps=opt.steps)
         self.compose = Compose([Normalize(opt.minmax), Cast()])
 
     def __len__(self):
@@ -92,18 +95,18 @@ class BaseDataset(data.Dataset):
     def __getitem__(self, idx):
         data = self.read_fits(self.list_data[idx])
         patch = self.random_crop(data)[None, :, :]
-
-        gaussian_single = self.generate_gaussian(patch.copy())
-        gaussian_stacked = self.generate_gaussian_stacked(patch.copy())
-        diffusion_noise, diffusion = self.generate_diffusion(patch.copy())
+        loc = patch.mean()
+        scale = patch.std()
+        noise = self.generate_gaussian(loc, scale, patch.shape)
+        gaussian = patch.copy() + noise.copy()
+        diffusion = self.generate_diffusion(patch.copy(), noise.copy())
         
         patch = self.compose(patch)
-        gaussian_single = self.compose(gaussian_single)
-        gaussian_stacked = self.compose(gaussian_stacked)
-        diffusion_noise = self.compose(diffusion_noise)
+        noise = self.compose(noise)
+        gaussian = self.compose(gaussian)
         diffusion = self.compose(diffusion)
 
-        return patch, gaussian_single, gaussian_stacked, diffusion_noise, diffusion
+        return patch, noise, gaussian, diffusion
 
 
 
@@ -127,20 +130,20 @@ if __name__ == "__main__" :
 
     imgs = []
 
-    fig = plt.figure(figsize=(17, 3))
-    for idx, (patch, gaussian_single, gaussian_stacked, diffusion) in enumerate(dataloader):
+    fig = plt.figure(figsize=(11, 3))
+    for idx, (patch, noise, gaussian, diffusion) in enumerate(dataloader):
         patch = patch.numpy()
-        gaussian_single = gaussian_single.numpy()
-        gaussian_stacked = gaussian_stacked.numpy()
+        noise = noise.numpy()
+        gaussian = gaussian.numpy()
         diffusion = diffusion.numpy()
-        print(idx, patch.dtype, gaussian_single.dtype, gaussian_stacked.dtype, diffusion.dtype)
+        print(idx, patch.dtype, noise.dtype, gaussian.dtype, diffusion.dtype)
 
         patch = patch[0][0]
-        gaussian_single = gaussian_single[0][0]
-        gaussian_stacked = gaussian_stacked[0][0]
+        noise = noise[0][0]
+        gaussian = gaussian[0][0]
         diffusion = diffusion[0][0]
 
-        img = np.hstack([patch, gaussian_single, gaussian_single-patch, gaussian_stacked, gaussian_stacked-patch, diffusion, diffusion-patch])
+        img = np.hstack([patch, noise, gaussian, diffusion])
         img = img * opt.minmax
         img = (img.copy() + 30.) * (255./60.)
         img = np.clip(img, 0, 255).astype(np.uint8)
