@@ -11,11 +11,10 @@ class TrainOption(BaseOption):
             help="mode value of Gaussian noise")
         self.parser.add_argument("--noise_scale", type=float, default=10,
             help="standard deviation value of Gaussian noise")
-        self.parser.add_argument("--scale_range", type=float, default=3,
-            help="deviation range noise scale")
 
-        self.parser.add_argument("--steps", type=int, default=200,
-            help="# of adding diffusion steps")
+        self.parser.add_argument("--steps", type=int, default=20,
+            help="# of adding noise and diffusion steps")
+
         self.parser.add_argument("--beta_start", type=float, default=0.0001,
             help="Diffusion beta start value")
         self.parser.add_argument("--beta_end", type=float, default=0.02,
