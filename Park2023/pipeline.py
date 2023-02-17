@@ -6,6 +6,30 @@ from sunpy.map import Map
 import torch.nn.functional as F
 
 
+class GenerateGaussian:
+    def __call__(self, loc, scale, size):
+        return np.random.normal(loc=loc, scale=scale, size=size)
+
+class Normalize:
+    def __call__(self, data, minmax):
+        return data/minmax
+
+class ReadFits:
+    def __call__(self, fits):
+        return Map(fits).data.astype(np.float64)
+
+class Cast:
+    def __call__(self, data):
+        return torch.from_numpy(data.astype(np.float32))
+
+class GaussianDataset(BaseDataset):
+    def __init__(self, opt):
+        super(GaussianDataset, self).__init__(opt)
+
+
+
+
+
 class BaseDataset(data.Dataset):
     def __init__(self, opt):
         self.list_data = glob('%s/*.fits'%(opt.root_data))
@@ -13,37 +37,32 @@ class BaseDataset(data.Dataset):
         self.minmax = opt.minmax
         self.noise_loc = opt.noise_loc
         self.noise_scale = opt.noise_scale
-        self.scale_range = opt.scale_range
+        self.steps = opt.steps
         self.patch_size = opt.patch_size
         self.beta_start = opt.beta_start
         self.beta_end = opt.beta_end
-        self.steps = opt.steps
-
         self.build_diffusion()
 
     def __len__(self):
         return self.nb_data
 
-    def read_fits(self, fits):
-        return Map(fits).data.astype(np.float64)
-
     def random_crop(self, data):
         x, y = np.random.randint(2048-512, 2048+512-self.patch_size, 2)
         return data[x:x+self.patch_size, y:y+self.patch_size]
 
-    def normalize(self, data):
-        return data / self.minmax
+    def add_single_gaussian(self, size):
+        return GenerateGaussian(loc=self.noise_loc, scale=self.noise_scale, size=size)
+    
+    def add_stacked_gaussian(self, size):
+        noise = []
+        for n in range(self.steps):
+            noise.append(GenerateGaussian(loc=self.noise_loc, scale=self.noise_scale, size=size))
+        return np.sum(noise, 0)
+        
 
-    def numpy2torch(self, data):
-        return torch.from_numpy(data.astype(np.float32))
-
-    def get_gaussian(self, size):
-        scale = np.random.uniform(
-            self.noise_scale - self.scale_range, self.noise_scale + self.scale_range)
-        return np.random.normal(loc=self.noise_loc, scale=scale, size=size)
 
     def add_gaussian(self, data):
-        noise = self.gaussian(data.shape)
+        noise = self.get_gaussian(data.shape)
         return data + noise
 
     def build_diffusion(self):
@@ -93,6 +112,12 @@ class BaseDataset(data.Dataset):
         diffusion = self.numpy2torch(diffusion)
 
         return patch, gaussian, diffusion
+
+
+
+
+
+
 
 if __name__ == "__main__" :
 
