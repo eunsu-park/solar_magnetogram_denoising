@@ -50,21 +50,15 @@ class BaseDataset(data.Dataset):
         x, y = np.random.randint(2048-512, 2048+512-self.patch_size, 2)
         return data[x:x+self.patch_size, y:y+self.patch_size]
 
-    def add_single_gaussian(self, size):
-        return GenerateGaussian(loc=self.noise_loc, scale=self.noise_scale, size=size)
+    def add_gaussian_single(self, data):
+        return data + GenerateGaussian(loc=self.noise_loc, scale=self.noise_scale, size=data.shape)
     
-    def add_stacked_gaussian(self, size):
+    def add_gaussian_stacked(self, data):
         noise = []
         for n in range(self.steps):
-            noise.append(GenerateGaussian(loc=self.noise_loc, scale=self.noise_scale, size=size))
-        return np.sum(noise, 0)
+            noise.append(GenerateGaussian(loc=self.noise_loc, scale=self.noise_scale, size=data.shape))
+        return data + np.sum(noise, 0)
         
-
-
-    def add_gaussian(self, data):
-        noise = self.get_gaussian(data.shape)
-        return data + noise
-
     def build_diffusion(self):
         betas = np.linspace(self.beta_start, self.beta_end, self.steps)
         alphas = 1. - betas
@@ -96,6 +90,7 @@ class BaseDataset(data.Dataset):
     def __getitem__(self, idx):
         data = self.read_fits(self.list_data[idx])
         patch = self.random_crop(data)[None, :, :]
+
         gaussian_noise = self.get_gaussian(patch.shape)
         diffusion_noise = self.get_diffusion(patch.shape)
         
