@@ -15,8 +15,6 @@ torch.backends.cudnn.benchmark = False
 
 
 import torch.nn as nn
-
-
 import os, time
 from imageio import imsave
 
@@ -32,17 +30,13 @@ path_snap = os.path.join(opt.root_save, opt.type_train, "snap")
 os.makedirs(path_model, exist_ok=True)
 os.makedirs(path_snap, exist_ok=True)
 
+
 ## Load Dataset ## 
 from utils.others import get_loss_function, define_dataset_and_model
-
 dataloader, network = define_dataset_and_model(opt)
 if ngpu > 1 :
     network = nn.DataParallel(network)
 network.to(device)
-
-@torch.no_grad()
-def generation(model, inp):
-    return model(inp)
 
 def lambda_rule(epoch):
     return 1.0 - max(0, epoch + 1 - opt.nb_epochs) / float(opt.nb_epochs_decay + 1)    
@@ -56,6 +50,10 @@ loss_function = get_loss_function(opt.loss_type).to(device)
 metric_function = get_loss_function(opt.metric_type).to(device)
 
 network.train()
+
+@torch.no_grad()
+def generation(model, inp):
+    return model(inp)
 
 palette = "\nEpoch: %d/%d Iteration: %d Loss: %5.3f Metric: %5.3f  Time: %dsec/%diters"
 iters = 0
