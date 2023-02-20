@@ -6,8 +6,6 @@ class BaseOption():
     def __init__(self):
         self.parser = argparse.ArgumentParser()
 
-        self.parser.add_argument("--prefix", type=str, default="AutoEncoder",
-            help="prefix")
         self.parser.add_argument("--seed", type=int, default=2331,
             help="random seed")
         self.parser.add_argument("--gpu_ids", type=str, default="0",
@@ -19,10 +17,10 @@ class BaseOption():
         self.parser.add_argument("--minmax", type=float, default=1000,
             help="data normalization factor")
         self.parser.add_argument("--root_data", type=str,
-            default=os.path.join("/", "home", "eunsu", "Drives", "Dataset", "denoising"),
+            default=os.path.join("/home/eunsu/Drives/Dataset/denoising"),
             help="path to load data")
         self.parser.add_argument("--root_save", type=str,
-            default=os.path.join("/", "home", "eunsu", "Drives", "Result", "denoising"),
+            default=os.path.join("/home/eunsu/Drives/Result/denoising"),
             help="path to save result")
 
     def parse(self):

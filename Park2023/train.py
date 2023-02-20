@@ -15,7 +15,7 @@ torch.backends.cudnn.benchmark = False
 
 
 import torch.nn as nn
-from torch.utils import data as data
+
 
 import os, time
 from imageio import imsave
@@ -27,35 +27,17 @@ device = torch.device('cuda' if cuda else 'cpu')
 print(cuda, ngpu)
 
 
-path_model = os.path.join(opt.root_save, opt.prefix, "model")
-path_snap = os.path.join(opt.root_save, opt.prefix, "snap")
+path_model = os.path.join(opt.root_save, opt.type_train, "model")
+path_snap = os.path.join(opt.root_save, opt.type_train, "snap")
 os.makedirs(path_model, exist_ok=True)
 os.makedirs(path_snap, exist_ok=True)
 
 ## Load Dataset ## 
-from pipeline import GaussianDataset
-dataset_train = GaussianDataset(opt, is_train=True)
-dataloader_train = data.DataLoader(
-    dataset_train, batch_size=opt.batch_size,
-    num_workers=opt.num_workers, shuffle=True)
-print(len(dataset_train), len(dataloader_train))
+from utils.others import get_loss_function, define_dataset_and_model
 
-dataset_test = GaussianDataset(opt, is_train=False)
-dataloader_test = data.DataLoader(
-    dataset_test, batch_size=4,
-    num_workers=4, shuffle=True)
-print(len(dataset_test), len(dataloader_test))
-dataloader_test = iter(dataloader_test)
-
-## Load Model ## 
-from models.pix2pix_unet import UnetGenerator as PUNet, init_weights
-
-network = PUNet(opt.ch_inp, opt.ch_tar, 6, 64)
-init_weights(network)
-
+dataloader, network = define_dataset_and_model(opt)
 if ngpu > 1 :
     network = nn.DataParallel(network)
-
 network.to(device)
 
 @torch.no_grad()
@@ -69,8 +51,6 @@ optim = torch.optim.Adam(network.parameters(),
     lr=opt.lr, betas=(opt.beta1, opt.beta2),
     eps=opt.eps, weight_decay=opt.weight_decay)
 scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer=optim, lr_lambda=lambda_rule)
-
-from utils.others import get_loss_function
 
 loss_function = get_loss_function(opt.loss_type).to(device)
 metric_function = get_loss_function(opt.metric_type).to(device)
@@ -87,7 +67,7 @@ t0 = time.time()
 epochs_max = opt.nb_epochs + opt.nb_epochs_decay
 
 while epochs < epochs_max :
-    for idx, (patch_, noise_, gaussian_) in enumerate(dataloader_train):
+    for idx, (patch_, noise_, gaussian_) in enumerate(dataloader):
 
         optim.zero_grad()
         inp = gaussian_.clone().to(device)
@@ -119,7 +99,7 @@ while epochs < epochs_max :
             snap = (snap + 30.) * (255./60.)
             snap = np.clip(snap, 0, 255).astype(np.uint8)
             imsave("%s/%07d.png" % (path_snap, iters), snap)
-            imsave("./%s_train_latest.png" % (opt.prefix), snap)
+            imsave("./%s_train_latest.png" % (opt.type_train), snap)
 
             losses = []
             metrics = []

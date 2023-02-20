@@ -4,6 +4,11 @@ class TrainOption(BaseOption):
     def __init__(self):
         super(TrainOption, self).__init__()
 
+        self.parser.add_argument("--is_train", type=bool, default=True)
+
+        self.parser.add_argument("--type_train", type=str, default="autoencoder",
+            help="type of train, ex) autoencoder")
+
         self.parser.add_argument("--patch_size", type=int, default=256,
             help="size of random patch for training")
 
@@ -14,7 +19,7 @@ class TrainOption(BaseOption):
 
         self.parser.add_argument("--batch_size", type=int, default=1,
             help="batch size")
-        self.parser.add_argument("--num_workers", type=int, default=4,
+        self.parser.add_argument("--num_workers", type=int, default=8,
             help="# of process for dataloader")
 
         self.parser.add_argument("--lr", type=float, default=0.0002,
@@ -32,3 +37,4 @@ class TrainOption(BaseOption):
 
         self.parser.add_argument("--report_freq", type=int, default=1000,
             help="report frequency in iterations")
+

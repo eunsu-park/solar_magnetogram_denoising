@@ -45,8 +45,8 @@ class RandomCrop(object):
         return data[x:x+self.patch_size, y:y+self.patch_size]
     
 class BaseDataset(data.Dataset):
-    def __init__(self, opt, is_train):
-        if is_train == True :
+    def __init__(self, opt):
+        if opt.is_train == True :
             pattern = '%s/train/*.fits'%(opt.root_data)
         else :
             pattern = '%s/test/*.fits'%(opt.root_data)
@@ -63,8 +63,8 @@ class BaseDataset(data.Dataset):
 
 
 class GaussianDataset(BaseDataset):
-    def __init__(self, opt, is_train=True):
-        super(GaussianDataset, self).__init__(opt, is_train=is_train)
+    def __init__(self, opt):
+        super(GaussianDataset, self).__init__(opt)
         self.fit_gaussian = FitGaussian()
         self.generate_gaussian = GenerateGaussian()
 
