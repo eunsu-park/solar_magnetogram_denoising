@@ -36,11 +36,17 @@ os.makedirs(path_snap, exist_ok=True)
 
 ## Load Dataset ## 
 from pipeline import GaussianDataset
-dataset = GaussianDataset(opt)
-dataloader = data.DataLoader(
-    dataset, batch_size=opt.batch_size,
+dataset_train = GaussianDataset(opt, is_train=True)
+dataloader_train = data.DataLoader(
+    dataset_train, batch_size=opt.batch_size,
     num_workers=opt.num_workers, shuffle=True)
-print(len(dataset), len(dataloader))
+print(len(dataset_train), len(dataloader_train))
+
+dataset_test = GaussianDataset(opt, is_train=False)
+dataloader_test = data.DataLoader(
+    dataset_test, batch_size=opt.batch_size,
+    num_workers=opt.num_workers, shuffle=True)
+print(len(dataset_test), len(dataloader_test))
 
 
 ## Load Model ## 
