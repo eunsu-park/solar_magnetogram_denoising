@@ -7,28 +7,14 @@ class TrainOption(BaseOption):
         self.parser.add_argument("--patch_size", type=int, default=256,
             help="size of random patch for training")
 
-        self.parser.add_argument("--noise_loc", type=float, default=0,
-            help="mode value of Gaussian noise")
-        self.parser.add_argument("--noise_scale", type=float, default=10,
-            help="standard deviation value of Gaussian noise")
-
-        self.parser.add_argument("--steps", type=int, default=20,
-            help="# of adding noise and diffusion steps")
-
-        self.parser.add_argument("--beta_start", type=float, default=0.0001,
-            help="Diffusion beta start value")
-        self.parser.add_argument("--beta_end", type=float, default=0.02,
-            help="Diffusion beta end value")
-
         self.parser.add_argument("--loss_type", type=str, default="l1",
             help="loss function for model training")
-
         self.parser.add_argument("--metric_type", type=str, default="l2",
             help="metric function for modeltraining monitoring")
 
-        self.parser.add_argument("--batch_size", type=int, default=4,
+        self.parser.add_argument("--batch_size", type=int, default=1,
             help="batch size")
-        self.parser.add_argument("--num_workers", type=int, default=8,
+        self.parser.add_argument("--num_workers", type=int, default=4,
             help="# of process for dataloader")
 
         self.parser.add_argument("--lr", type=float, default=0.0002,
@@ -39,10 +25,10 @@ class TrainOption(BaseOption):
         self.parser.add_argument("--weight_decay", type=float, default=0.001,
             help="l2 regularization")
 
-        self.parser.add_argument("--nb_epochs", type=int, default=50,
+        self.parser.add_argument("--nb_epochs", type=int, default=100,
             help="# of epochs with initial learning rate")
-        self.parser.add_argument("--nb_epochs_decay", type=int, default=50,
+        self.parser.add_argument("--nb_epochs_decay", type=int, default=100,
             help="# of epochs with linearly decaying learning rate")
 
-        self.parser.add_argument("--report_freq", type=int, default=100,
+        self.parser.add_argument("--report_freq", type=int, default=1000,
             help="report frequency in iterations")

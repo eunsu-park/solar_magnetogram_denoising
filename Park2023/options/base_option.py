@@ -6,6 +6,8 @@ class BaseOption():
     def __init__(self):
         self.parser = argparse.ArgumentParser()
 
+        self.parser.add_argument("--prefix", type=str, default="AutoEncoder",
+            help="prefix")
         self.parser.add_argument("--seed", type=int, default=2331,
             help="random seed")
         self.parser.add_argument("--gpu_ids", type=str, default="0",
