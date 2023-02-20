@@ -26,10 +26,11 @@ def define_dataset_and_model(opt):
     print(len(dataset), len(dataloader))
     return dataloader, network
 
-def define_optim_and_scheduler(opt):
+def define_optim_and_scheduler(opt, network):
     def lambda_rule(epoch):
         return 1.0 - max(0, epoch + 1 - opt.nb_epochs) / float(opt.nb_epochs_decay + 1)    
     optim = torch.optim.Adam(network.parameters(),
         lr=opt.lr, betas=(opt.beta1, opt.beta2),
         eps=opt.eps, weight_decay=opt.weight_decay)
     scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer=optim, lr_lambda=lambda_rule)
+    return optim, scheduler
