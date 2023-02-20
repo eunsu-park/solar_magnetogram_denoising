@@ -45,7 +45,7 @@ class RandomCrop(object):
         return data[x:x+self.patch_size, y:y+self.patch_size]
     
 class BaseDataset(data.Dataset):
-    def __init__(self, opt, is_train=True):
+    def __init__(self, opt, is_train):
         if is_train == True :
             pattern = '%s/train/*.fits'%(opt.root_data)
         else :
@@ -63,8 +63,8 @@ class BaseDataset(data.Dataset):
 
 
 class GaussianDataset(BaseDataset):
-    def __init__(self, opt, is_train):
-        super(GaussianDataset, self).__init__(opt, is_train)
+    def __init__(self, opt, is_train=True):
+        super(GaussianDataset, self).__init__(opt, is_train=is_train)
         self.fit_gaussian = FitGaussian()
         self.generate_gaussian = GenerateGaussian()
 
@@ -92,35 +92,35 @@ if __name__ == "__main__" :
 
     opt = TrainOption().parse()
 
-    dataset = GaussianDataset(opt)
-    dataloader = data.DataLoader(dataset, batch_size=opt.batch_size, num_workers=opt.num_workers)
+    dataset = GaussianDataset(opt, is_train=True)
+    dataloader = data.DataLoader(dataset, batch_size=8, num_workers=16)
     print(len(dataset), len(dataloader))
 
     imgs = []
 
-    fig = plt.figure(figsize=(9, 3))
-    for idx, (patch, noise, gaussian) in enumerate(dataloader):
-        patch = patch.numpy()
-        noise = noise.numpy()
-        gaussian = gaussian.numpy()
-        print(idx, patch.dtype, noise.dtype, gaussian.dtype)
+    # fig = plt.figure(figsize=(9, 3))
+    # for idx, (patch, noise, gaussian) in enumerate(dataloader):
+    #     patch = patch.numpy()
+    #     noise = noise.numpy()
+    #     gaussian = gaussian.numpy()
+    #     print(idx, patch.dtype, noise.dtype, gaussian.dtype)
 
-        patch = patch[0][0]
-        noise = noise[0][0]
-        gaussian = gaussian[0][0]
+    #     patch = patch[0][0]
+    #     noise = noise[0][0]
+    #     gaussian = gaussian[0][0]
 
-        img = np.hstack([patch, noise, gaussian])
-        img = img * opt.minmax
-        img = (img.copy() + 30.) * (255./60.)
-        img = np.clip(img, 0, 255).astype(np.uint8)
+    #     img = np.hstack([patch, noise, gaussian])
+    #     img = img * opt.minmax
+    #     img = (img.copy() + 30.) * (255./60.)
+    #     img = np.clip(img, 0, 255).astype(np.uint8)
 
-        plot = plt.imshow(img, cmap='gray', animated=True)
-        plt.tight_layout()
-        imgs.append([plot])
+    #     plot = plt.imshow(img, cmap='gray', animated=True)
+    #     plt.tight_layout()
+    #     imgs.append([plot])
 
-        if idx == 100 :
-            break
+    #     if idx == 100 :
+    #         break
 
-    animate = animation.ArtistAnimation(fig, imgs, interval=500, blit=True)
-    animate.save('%s_data.gif' % (opt.prefix))
-    plt.close()
+    # animate = animation.ArtistAnimation(fig, imgs, interval=500, blit=True)
+    # animate.save('%s_data.gif' % (opt.prefix))
+    # plt.close()

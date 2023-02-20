@@ -27,12 +27,10 @@ device = torch.device('cuda' if cuda else 'cpu')
 print(cuda, ngpu)
 
 
-
 path_model = os.path.join(opt.root_save, opt.prefix, "model")
 path_snap = os.path.join(opt.root_save, opt.prefix, "snap")
 os.makedirs(path_model, exist_ok=True)
 os.makedirs(path_snap, exist_ok=True)
-
 
 ## Load Dataset ## 
 from pipeline import GaussianDataset
@@ -44,10 +42,10 @@ print(len(dataset_train), len(dataloader_train))
 
 dataset_test = GaussianDataset(opt, is_train=False)
 dataloader_test = data.DataLoader(
-    dataset_test, batch_size=opt.batch_size,
-    num_workers=opt.num_workers, shuffle=True)
+    dataset_test, batch_size=4,
+    num_workers=4, shuffle=True)
 print(len(dataset_test), len(dataloader_test))
-
+dataloader_test = iter(dataloader_test)
 
 ## Load Model ## 
 from models.pix2pix_unet import UnetGenerator as PUNet, init_weights
@@ -63,11 +61,6 @@ network.to(device)
 @torch.no_grad()
 def generation(model, inp):
     return model(inp)
-
-def hstack(tarray, nb=2):
-    narray = tarray.cpu().numpy()
-    return np.hstack([narray[n][0] for n in range(nb)])
-
 
 def lambda_rule(epoch):
     return 1.0 - max(0, epoch + 1 - opt.nb_epochs) / float(opt.nb_epochs_decay + 1)    
@@ -94,7 +87,7 @@ t0 = time.time()
 epochs_max = opt.nb_epochs + opt.nb_epochs_decay
 
 while epochs < epochs_max :
-    for idx, (patch_, noise_, gaussian_) in enumerate(dataloader):
+    for idx, (patch_, noise_, gaussian_) in enumerate(dataloader_train):
 
         optim.zero_grad()
         inp = gaussian_.clone().to(device)
@@ -117,13 +110,11 @@ while epochs < epochs_max :
 
             inp = patch_.clone().to(device)
             gen = generation(network, inp)
-            
-            inp = hstack(inp)
-            gen = hstack(gen)
 
+            inp = inp.cpu().numpy()[0][0]
+            gen = gen.cpu().numpy()[0][0]
             noise = inp - gen
-
-            snap = np.vstack([inp, gen, noise])
+            snap = np.hstack([inp, gen, noise])
             snap = snap * opt.minmax
             snap = (snap + 30.) * (255./60.)
             snap = np.clip(snap, 0, 255).astype(np.uint8)
