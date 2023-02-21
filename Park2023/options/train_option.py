@@ -9,6 +9,9 @@ class TrainOption(BaseOption):
         self.parser.add_argument("--type_train", type=str, default="autoencoder",
             help="type of train, ex) autoencoder")
 
+        self.parser.add_argument("--keyword", type=str, default="noise",
+            help="keyword for identification")
+
         self.parser.add_argument("--patch_size", type=int, default=256,
             help="size of random patch for training")
 

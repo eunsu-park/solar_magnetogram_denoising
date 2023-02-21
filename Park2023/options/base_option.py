@@ -16,6 +16,10 @@ class BaseOption():
             help="number of target channel")
         self.parser.add_argument("--minmax", type=float, default=1000,
             help="data normalization factor")
+
+        self.parser.add_argument("--nb_down", type=int, default=8,
+            help="# of down samplings oin UNet")
+
         self.parser.add_argument("--root_data", type=str,
             default=os.path.join("/home/eunsu/Drives/Dataset/denoising"),
             help="path to load data")

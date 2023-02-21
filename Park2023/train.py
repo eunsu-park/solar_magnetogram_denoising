@@ -25,10 +25,14 @@ device = torch.device('cuda' if cuda else 'cpu')
 print(cuda, ngpu)
 
 
-path_model = os.path.join(opt.root_save, opt.type_train, "model")
-path_snap = os.path.join(opt.root_save, opt.type_train, "snap")
+path_model = os.path.join(opt.root_save, opt.type_train, opt.keyword, "model")
+path_snap = os.path.join(opt.root_save, opt.type_train, opt.keyword, "snap")
 os.makedirs(path_model, exist_ok=True)
 os.makedirs(path_snap, exist_ok=True)
+
+path_logger = "./%s_%s.log" % (opt.type_train, opt.keyword)
+logger = open(path_logger, "w")
+logger.close()
 
 
 ## Load Dataset ## 
@@ -55,7 +59,7 @@ network.train()
 def generation(model, inp):
     return model(inp)
 
-palette = "\nEpoch: %d/%d Iteration: %d Loss: %5.3f Metric: %5.3f  Time: %dsec/%diters"
+palette = "Epoch: %d/%d Iteration: %d Loss: %5.3f Metric: %5.3f  Time: %dsec/%diters \n"
 iters = 0
 epochs = 0
 losses = []
@@ -67,37 +71,72 @@ epochs_max = opt.nb_epochs + opt.nb_epochs_decay
 while epochs < epochs_max :
     for idx, (patch_, noise_, gaussian_) in enumerate(dataloader):
 
-        optim.zero_grad()
-        inp = gaussian_.clone().to(device)
-        tar = patch_.clone().to(device)
-        gen = network(inp)
-        loss = loss_function(gen, tar)
-        metric = metric_function(gen, tar)
-        loss.backward()
-        optim.step()
-        losses.append(loss.item())
-        metrics.append(metric.item())
+        if opt.keyword == "noise" :
+
+            optim.zero_grad()
+            inp = gaussian_.clone().to(device)
+            tar = patch_.clone().to(device)
+            noise = network(inp)
+            gen = inp - noise
+            loss = loss_function(gen, tar)
+            metric = metric_function(gen, tar)
+            loss.backward()
+            optim.step()
+            losses.append(loss.item())
+            metrics.append(metric.item())
+
+
+        elif opt.keyword == "denoised" :
+
+            optim.zero_grad()
+            inp = gaussian_.clone().to(device)
+            tar = patch_.clone().to(device)
+            gen = network(inp)
+            loss = loss_function(gen, tar)
+            metric = metric_function(gen, tar)
+            loss.backward()
+            optim.step()
+            losses.append(loss.item())
+            metrics.append(metric.item())
 
         iters += 1
 
         if iters % opt.report_freq == 0 :
+            logger = open(path_logger, 'a')
             paint = (epochs, epochs_max, iters,
                 np.mean(losses), np.mean(metrics), 
                 time.time()-t0, opt.report_freq)
             print(palette % paint)
+            logger.write(palette % paint)
+            logger.close()
+
+
+            network.eval()
 
             inp = patch_.clone().to(device)
-            gen = generation(network, inp)
 
-            inp = inp.cpu().numpy()[0][0]
-            gen = gen.cpu().numpy()[0][0]
-            noise = inp - gen
+            if opt.keyword == "noise" :
+
+                noise = generation(network, inp)
+                inp = inp.cpu().numpy()[0][0]
+                noise = noise.cpu().numpy()[0][0]
+                gen = inp - noise
+
+            elif opt.keyword == "denoised" :
+
+                gen = generation(network, inp)
+                inp = inp.cpu().numpy()[0][0]
+                gen = gen.cpu().numpy()[0][0]
+                noise = inp - gen
+
             snap = np.hstack([inp, gen, noise])
             snap = snap * opt.minmax
             snap = (snap + 30.) * (255./60.)
             snap = np.clip(snap, 0, 255).astype(np.uint8)
             imsave("%s/%07d.png" % (path_snap, iters), snap)
-            imsave("./%s_train_latest.png" % (opt.type_train), snap)
+            imsave("./%s_%s_latest.png" % (opt.type_train, opt.keyword), snap)
+            
+            network.train()
 
             losses = []
             metrics = []
