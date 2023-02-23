@@ -25,12 +25,12 @@ device = torch.device('cuda' if cuda else 'cpu')
 print(cuda, ngpu)
 
 
-path_model = os.path.join(opt.root_save, opt.name_data, opt.keyword, "model")
-path_snap = os.path.join(opt.root_save, opt.name_data, opt.keyword, "snap")
+path_model = os.path.join(opt.root_save, opt.name_data, opt.model_out, "model")
+path_snap = os.path.join(opt.root_save, opt.name_data, opt.model_out, "snap")
 os.makedirs(path_model, exist_ok=True)
 os.makedirs(path_snap, exist_ok=True)
 
-path_logger = "./%s_%s.log" % (opt.type_train, opt.keyword)
+path_logger = "./%s_%s.log" % (opt.name_data, opt.model_out)
 logger = open(path_logger, "w")
 logger.close()
 
@@ -71,7 +71,7 @@ epochs_max = opt.nb_epochs + opt.nb_epochs_decay
 while epochs < epochs_max :
     for idx, (patch_, noise_, gaussian_) in enumerate(dataloader):
 
-        if opt.keyword == "noise" :
+        if opt.model_out == "noise" :
 
             optim.zero_grad()
             inp = gaussian_.clone().to(device)
@@ -86,7 +86,7 @@ while epochs < epochs_max :
             metrics.append(metric.item())
 
 
-        elif opt.keyword == "denoised" :
+        elif opt.model_out == "denoised" :
 
             optim.zero_grad()
             inp = gaussian_.clone().to(device)
@@ -115,14 +115,14 @@ while epochs < epochs_max :
 
             inp = patch_.clone().to(device)
 
-            if opt.keyword == "noise" :
+            if opt.model_out == "noise" :
 
                 noise = generation(network, inp)
                 inp = inp.cpu().numpy()[0][0]
                 noise = noise.cpu().numpy()[0][0]
                 gen = inp - noise
 
-            elif opt.keyword == "denoised" :
+            elif opt.model_out == "denoised" :
 
                 gen = generation(network, inp)
                 inp = inp.cpu().numpy()[0][0]
@@ -134,7 +134,7 @@ while epochs < epochs_max :
             snap = (snap + 30.) * (255./60.)
             snap = np.clip(snap, 0, 255).astype(np.uint8)
             imsave("%s/%07d.png" % (path_snap, iters), snap)
-            imsave("./%s_%s_latest.png" % (opt.name_data, opt.keyword), snap)
+            imsave("./%s_%s_latest.png" % (opt.name_data, opt.model_out), snap)
             
             network.train()
 

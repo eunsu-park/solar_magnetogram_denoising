@@ -14,12 +14,11 @@ def get_loss_function(loss_type, reduction='mean'):
     return loss_function
 
 def define_dataset_and_model(opt):
-    if opt.type_train == "autoencoder" :
-        from pipeline import GaussianDataset as Dataset
-        from models.pix2pix_unet import UnetGenerator as PUNet, init_weights
-        dataset = Dataset(opt)
-        network = PUNet(opt.ch_inp, opt.ch_tar, opt.nb_down, 64, use_dropout=True)
-        init_weights(network)
+    from pipeline import GaussianDataset as Dataset
+    from models.pix2pix_unet import UnetGenerator as PUNet, init_weights
+    dataset = Dataset(opt)
+    network = PUNet(opt.ch_inp, opt.ch_tar, opt.nb_down, 64, use_dropout=True)
+    init_weights(network)
     dataloader = data.DataLoader(
         dataset, batch_size=opt.batch_size,
         num_workers=opt.num_workers, shuffle=opt.is_train)

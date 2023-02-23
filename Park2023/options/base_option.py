@@ -12,7 +12,7 @@ class BaseOption():
         self.parser.add_argument("--name_data", type=str, default="M_45s",
             help="name of data, M_45s, M_720s")
         
-        self.parser.add_argument("--keyword", type=str, default="noise",
+        self.parser.add_argument("--model_out", type=str, default="noise",
             help="keyword for identification, noise, denoised")
 
         self.parser.add_argument("--gpu_ids", type=str, default="0",
