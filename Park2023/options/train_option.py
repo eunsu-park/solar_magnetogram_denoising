@@ -6,9 +6,6 @@ class TrainOption(BaseOption):
 
         self.parser.add_argument("--is_train", type=bool, default=True)
 
-        self.parser.add_argument("--type_train", type=str, default="autoencoder",
-            help="type of train, ex) autoencoder")
-
         self.parser.add_argument("--keyword", type=str, default="noise",
             help="keyword for identification")
 

@@ -1,0 +1,1040 @@
+True 1
+UnetGenerator(
+  (model): UnetSkipConnectionBlock(
+    (model): Sequential(
+      (0): Conv2d(1, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): UnetSkipConnectionBlock(
+        (model): Sequential(
+          (0): LeakyReLU(negative_slope=0.2, inplace=True)
+          (1): Conv2d(64, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+          (2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (3): UnetSkipConnectionBlock(
+            (model): Sequential(
+              (0): LeakyReLU(negative_slope=0.2, inplace=True)
+              (1): Conv2d(128, 256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+              (2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (3): UnetSkipConnectionBlock(
+                (model): Sequential(
+                  (0): LeakyReLU(negative_slope=0.2, inplace=True)
+                  (1): Conv2d(256, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                  (2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (3): UnetSkipConnectionBlock(
+                    (model): Sequential(
+                      (0): LeakyReLU(negative_slope=0.2, inplace=True)
+                      (1): Conv2d(512, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                      (2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                      (3): UnetSkipConnectionBlock(
+                        (model): Sequential(
+                          (0): LeakyReLU(negative_slope=0.2, inplace=True)
+                          (1): Conv2d(512, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                          (2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                          (3): UnetSkipConnectionBlock(
+                            (model): Sequential(
+                              (0): LeakyReLU(negative_slope=0.2, inplace=True)
+                              (1): Conv2d(512, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                              (2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                              (3): UnetSkipConnectionBlock(
+                                (model): Sequential(
+                                  (0): LeakyReLU(negative_slope=0.2, inplace=True)
+                                  (1): Conv2d(512, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                                  (2): ReLU(inplace=True)
+                                  (3): ConvTranspose2d(512, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                                  (4): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                )
+                              )
+                              (4): ReLU(inplace=True)
+                              (5): ConvTranspose2d(1024, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                              (6): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                              (7): Dropout(p=0.5, inplace=False)
+                            )
+                          )
+                          (4): ReLU(inplace=True)
+                          (5): ConvTranspose2d(1024, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                          (6): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                          (7): Dropout(p=0.5, inplace=False)
+                        )
+                      )
+                      (4): ReLU(inplace=True)
+                      (5): ConvTranspose2d(1024, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                      (6): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                      (7): Dropout(p=0.5, inplace=False)
+                    )
+                  )
+                  (4): ReLU(inplace=True)
+                  (5): ConvTranspose2d(1024, 256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                  (6): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                )
+              )
+              (4): ReLU(inplace=True)
+              (5): ConvTranspose2d(512, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+              (6): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (4): ReLU(inplace=True)
+          (5): ConvTranspose2d(256, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+          (6): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (2): ReLU(inplace=True)
+      (3): ConvTranspose2d(128, 1, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (4): Tanh()
+    )
+  )
+)
+The number of parameters: 54407809
+initialize network with normal
+1087 1087
+True 1
+UnetGenerator(
+  (model): UnetSkipConnectionBlock(
+    (model): Sequential(
+      (0): Conv2d(1, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): UnetSkipConnectionBlock(
+        (model): Sequential(
+          (0): LeakyReLU(negative_slope=0.2, inplace=True)
+          (1): Conv2d(64, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+          (2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (3): UnetSkipConnectionBlock(
+            (model): Sequential(
+              (0): LeakyReLU(negative_slope=0.2, inplace=True)
+              (1): Conv2d(128, 256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+              (2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (3): UnetSkipConnectionBlock(
+                (model): Sequential(
+                  (0): LeakyReLU(negative_slope=0.2, inplace=True)
+                  (1): Conv2d(256, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                  (2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (3): UnetSkipConnectionBlock(
+                    (model): Sequential(
+                      (0): LeakyReLU(negative_slope=0.2, inplace=True)
+                      (1): Conv2d(512, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                      (2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                      (3): UnetSkipConnectionBlock(
+                        (model): Sequential(
+                          (0): LeakyReLU(negative_slope=0.2, inplace=True)
+                          (1): Conv2d(512, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                          (2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                          (3): UnetSkipConnectionBlock(
+                            (model): Sequential(
+                              (0): LeakyReLU(negative_slope=0.2, inplace=True)
+                              (1): Conv2d(512, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                              (2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                              (3): UnetSkipConnectionBlock(
+                                (model): Sequential(
+                                  (0): LeakyReLU(negative_slope=0.2, inplace=True)
+                                  (1): Conv2d(512, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                                  (2): ReLU(inplace=True)
+                                  (3): ConvTranspose2d(512, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                                  (4): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                )
+                              )
+                              (4): ReLU(inplace=True)
+                              (5): ConvTranspose2d(1024, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                              (6): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                              (7): Dropout(p=0.5, inplace=False)
+                            )
+                          )
+                          (4): ReLU(inplace=True)
+                          (5): ConvTranspose2d(1024, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                          (6): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                          (7): Dropout(p=0.5, inplace=False)
+                        )
+                      )
+                      (4): ReLU(inplace=True)
+                      (5): ConvTranspose2d(1024, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                      (6): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                      (7): Dropout(p=0.5, inplace=False)
+                    )
+                  )
+                  (4): ReLU(inplace=True)
+                  (5): ConvTranspose2d(1024, 256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                  (6): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                )
+              )
+              (4): ReLU(inplace=True)
+              (5): ConvTranspose2d(512, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+              (6): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (4): ReLU(inplace=True)
+          (5): ConvTranspose2d(256, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+          (6): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (2): ReLU(inplace=True)
+      (3): ConvTranspose2d(128, 1, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (4): Tanh()
+    )
+  )
+)
+The number of parameters: 54407809
+initialize network with normal
+1087 1087
+Epoch: 0/200 Iteration: 1000 Loss: 0.011 Metric: 0.001  Time: 133sec/1000iters 
+
+Epoch: 0/200 Iteration: 1000 Loss: 0.009 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 1/200 Iteration: 2000 Loss: 0.008 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 1/200 Iteration: 2000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 2/200 Iteration: 3000 Loss: 0.007 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 2/200 Iteration: 3000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 3/200 Iteration: 4000 Loss: 0.007 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 3/200 Iteration: 4000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 4/200 Iteration: 5000 Loss: 0.007 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 4/200 Iteration: 5000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 5/200 Iteration: 6000 Loss: 0.006 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 5/200 Iteration: 6000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 6/200 Iteration: 7000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 6/200 Iteration: 7000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 7/200 Iteration: 8000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 7/200 Iteration: 8000 Loss: 0.006 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 8/200 Iteration: 9000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 8/200 Iteration: 9000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 9/200 Iteration: 10000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 9/200 Iteration: 10000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 10/200 Iteration: 11000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 10/200 Iteration: 11000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 11/200 Iteration: 12000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 11/200 Iteration: 13000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 11/200 Iteration: 12000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 11/200 Iteration: 13000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 12/200 Iteration: 14000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 12/200 Iteration: 14000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 13/200 Iteration: 15000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 13/200 Iteration: 15000 Loss: 0.005 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 14/200 Iteration: 16000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 14/200 Iteration: 16000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 15/200 Iteration: 17000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 15/200 Iteration: 17000 Loss: 0.006 Metric: 0.000  Time: 143sec/1000iters 
+
+Epoch: 16/200 Iteration: 18000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 16/200 Iteration: 18000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 17/200 Iteration: 19000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 17/200 Iteration: 19000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 18/200 Iteration: 20000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 18/200 Iteration: 20000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 19/200 Iteration: 21000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 19/200 Iteration: 21000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 20/200 Iteration: 22000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 20/200 Iteration: 22000 Loss: 0.005 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 21/200 Iteration: 23000 Loss: 0.005 Metric: 0.000  Time: 143sec/1000iters 
+
+Epoch: 21/200 Iteration: 23000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 22/200 Iteration: 24000 Loss: 0.005 Metric: 0.000  Time: 134sec/1000iters 
+
+Epoch: 22/200 Iteration: 25000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 22/200 Iteration: 24000 Loss: 0.006 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 22/200 Iteration: 25000 Loss: 0.006 Metric: 0.000  Time: 134sec/1000iters 
+
+Epoch: 23/200 Iteration: 26000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 23/200 Iteration: 26000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 24/200 Iteration: 27000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 24/200 Iteration: 27000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 25/200 Iteration: 28000 Loss: 0.005 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 25/200 Iteration: 28000 Loss: 0.006 Metric: 0.000  Time: 144sec/1000iters 
+
+Epoch: 26/200 Iteration: 29000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 26/200 Iteration: 29000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 27/200 Iteration: 30000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 27/200 Iteration: 30000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 28/200 Iteration: 31000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 28/200 Iteration: 31000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 29/200 Iteration: 32000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 29/200 Iteration: 32000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 30/200 Iteration: 33000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 30/200 Iteration: 33000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 31/200 Iteration: 34000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 31/200 Iteration: 34000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 32/200 Iteration: 35000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 32/200 Iteration: 35000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 33/200 Iteration: 36000 Loss: 0.005 Metric: 0.000  Time: 143sec/1000iters 
+
+Epoch: 33/200 Iteration: 36000 Loss: 0.006 Metric: 0.000  Time: 134sec/1000iters 
+
+Epoch: 34/200 Iteration: 37000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 34/200 Iteration: 38000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 34/200 Iteration: 37000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 34/200 Iteration: 38000 Loss: 0.006 Metric: 0.000  Time: 133sec/1000iters 
+
+Epoch: 35/200 Iteration: 39000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 35/200 Iteration: 39000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 36/200 Iteration: 40000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 36/200 Iteration: 40000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 37/200 Iteration: 41000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 37/200 Iteration: 41000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 38/200 Iteration: 42000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 38/200 Iteration: 42000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 39/200 Iteration: 43000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 39/200 Iteration: 43000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 40/200 Iteration: 44000 Loss: 0.005 Metric: 0.000  Time: 133sec/1000iters 
+
+Epoch: 40/200 Iteration: 44000 Loss: 0.006 Metric: 0.000  Time: 144sec/1000iters 
+
+Epoch: 41/200 Iteration: 45000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 41/200 Iteration: 45000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 42/200 Iteration: 46000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 42/200 Iteration: 46000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 43/200 Iteration: 47000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 43/200 Iteration: 47000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 44/200 Iteration: 48000 Loss: 0.005 Metric: 0.000  Time: 133sec/1000iters 
+
+Epoch: 44/200 Iteration: 48000 Loss: 0.006 Metric: 0.000  Time: 143sec/1000iters 
+
+Epoch: 45/200 Iteration: 49000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 45/200 Iteration: 50000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 45/200 Iteration: 49000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 45/200 Iteration: 50000 Loss: 0.006 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 46/200 Iteration: 51000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 46/200 Iteration: 51000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 47/200 Iteration: 52000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 47/200 Iteration: 52000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 48/200 Iteration: 53000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 48/200 Iteration: 53000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 49/200 Iteration: 54000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 49/200 Iteration: 54000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 50/200 Iteration: 55000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 50/200 Iteration: 55000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 51/200 Iteration: 56000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 51/200 Iteration: 56000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 52/200 Iteration: 57000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 52/200 Iteration: 57000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 53/200 Iteration: 58000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 53/200 Iteration: 58000 Loss: 0.006 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 54/200 Iteration: 59000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 54/200 Iteration: 59000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 55/200 Iteration: 60000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 55/200 Iteration: 60000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 56/200 Iteration: 61000 Loss: 0.005 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 56/200 Iteration: 61000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 57/200 Iteration: 62000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 57/200 Iteration: 63000 Loss: 0.005 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 57/200 Iteration: 62000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 57/200 Iteration: 63000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 58/200 Iteration: 64000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 58/200 Iteration: 64000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 59/200 Iteration: 65000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 59/200 Iteration: 65000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 60/200 Iteration: 66000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 60/200 Iteration: 66000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 61/200 Iteration: 67000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 61/200 Iteration: 67000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 62/200 Iteration: 68000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 62/200 Iteration: 68000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 63/200 Iteration: 69000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 63/200 Iteration: 69000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 64/200 Iteration: 70000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 64/200 Iteration: 70000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 65/200 Iteration: 71000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 65/200 Iteration: 71000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 66/200 Iteration: 72000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 66/200 Iteration: 72000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 67/200 Iteration: 73000 Loss: 0.005 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 67/200 Iteration: 73000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 68/200 Iteration: 74000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 68/200 Iteration: 75000 Loss: 0.005 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 68/200 Iteration: 74000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 68/200 Iteration: 75000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 69/200 Iteration: 76000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 69/200 Iteration: 76000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 70/200 Iteration: 77000 Loss: 0.005 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 70/200 Iteration: 77000 Loss: 0.006 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 71/200 Iteration: 78000 Loss: 0.005 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 71/200 Iteration: 78000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 72/200 Iteration: 79000 Loss: 0.005 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 72/200 Iteration: 79000 Loss: 0.006 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 73/200 Iteration: 80000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 73/200 Iteration: 80000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 74/200 Iteration: 81000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 74/200 Iteration: 81000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 75/200 Iteration: 82000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 75/200 Iteration: 82000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 76/200 Iteration: 83000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 76/200 Iteration: 83000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 77/200 Iteration: 84000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 77/200 Iteration: 84000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 78/200 Iteration: 85000 Loss: 0.005 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 78/200 Iteration: 85000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 79/200 Iteration: 86000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 79/200 Iteration: 86000 Loss: 0.006 Metric: 0.000  Time: 143sec/1000iters 
+
+Epoch: 80/200 Iteration: 87000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 80/200 Iteration: 88000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 80/200 Iteration: 87000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 80/200 Iteration: 88000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 81/200 Iteration: 89000 Loss: 0.005 Metric: 0.000  Time: 134sec/1000iters 
+
+Epoch: 81/200 Iteration: 89000 Loss: 0.006 Metric: 0.000  Time: 144sec/1000iters 
+
+Epoch: 82/200 Iteration: 90000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 82/200 Iteration: 90000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 83/200 Iteration: 91000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 83/200 Iteration: 91000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 84/200 Iteration: 92000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 84/200 Iteration: 92000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 85/200 Iteration: 93000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 85/200 Iteration: 93000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 86/200 Iteration: 94000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 86/200 Iteration: 94000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 87/200 Iteration: 95000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 87/200 Iteration: 95000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 88/200 Iteration: 96000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 88/200 Iteration: 96000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 89/200 Iteration: 97000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 89/200 Iteration: 97000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 90/200 Iteration: 98000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 90/200 Iteration: 98000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 91/200 Iteration: 99000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 91/200 Iteration: 100000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 91/200 Iteration: 99000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 91/200 Iteration: 100000 Loss: 0.006 Metric: 0.000  Time: 134sec/1000iters 
+
+Epoch: 92/200 Iteration: 101000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 92/200 Iteration: 101000 Loss: 0.006 Metric: 0.000  Time: 143sec/1000iters 
+
+Epoch: 93/200 Iteration: 102000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 93/200 Iteration: 102000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 94/200 Iteration: 103000 Loss: 0.005 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 94/200 Iteration: 103000 Loss: 0.006 Metric: 0.000  Time: 143sec/1000iters 
+
+Epoch: 95/200 Iteration: 104000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 95/200 Iteration: 104000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 96/200 Iteration: 105000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 96/200 Iteration: 105000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 97/200 Iteration: 106000 Loss: 0.005 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 97/200 Iteration: 106000 Loss: 0.005 Metric: 0.000  Time: 133sec/1000iters 
+
+Epoch: 98/200 Iteration: 107000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 98/200 Iteration: 107000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 99/200 Iteration: 108000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 99/200 Iteration: 108000 Loss: 0.006 Metric: 0.000  Time: 143sec/1000iters 
+
+Epoch: 100/200 Iteration: 109000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 100/200 Iteration: 109000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 101/200 Iteration: 110000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 101/200 Iteration: 110000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 102/200 Iteration: 111000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 102/200 Iteration: 111000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 103/200 Iteration: 112000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 103/200 Iteration: 113000 Loss: 0.005 Metric: 0.000  Time: 134sec/1000iters 
+
+Epoch: 103/200 Iteration: 112000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 103/200 Iteration: 113000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 104/200 Iteration: 114000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 104/200 Iteration: 114000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 105/200 Iteration: 115000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 105/200 Iteration: 115000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 106/200 Iteration: 116000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 106/200 Iteration: 116000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 107/200 Iteration: 117000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 107/200 Iteration: 117000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 108/200 Iteration: 118000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 108/200 Iteration: 118000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 109/200 Iteration: 119000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 109/200 Iteration: 119000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 110/200 Iteration: 120000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 110/200 Iteration: 120000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 111/200 Iteration: 121000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 111/200 Iteration: 121000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 112/200 Iteration: 122000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 112/200 Iteration: 122000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 113/200 Iteration: 123000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 113/200 Iteration: 123000 Loss: 0.006 Metric: 0.000  Time: 144sec/1000iters 
+
+Epoch: 114/200 Iteration: 124000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 114/200 Iteration: 125000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 114/200 Iteration: 124000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 114/200 Iteration: 125000 Loss: 0.006 Metric: 0.000  Time: 133sec/1000iters 
+
+Epoch: 115/200 Iteration: 126000 Loss: 0.005 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 115/200 Iteration: 126000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 116/200 Iteration: 127000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 116/200 Iteration: 127000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 117/200 Iteration: 128000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 117/200 Iteration: 128000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 118/200 Iteration: 129000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 118/200 Iteration: 129000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 119/200 Iteration: 130000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 119/200 Iteration: 130000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 120/200 Iteration: 131000 Loss: 0.005 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 120/200 Iteration: 131000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 121/200 Iteration: 132000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 121/200 Iteration: 132000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 122/200 Iteration: 133000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 122/200 Iteration: 133000 Loss: 0.006 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 123/200 Iteration: 134000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 123/200 Iteration: 134000 Loss: 0.006 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 124/200 Iteration: 135000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 124/200 Iteration: 135000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 125/200 Iteration: 136000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 125/200 Iteration: 136000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 126/200 Iteration: 137000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 126/200 Iteration: 138000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 126/200 Iteration: 137000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 126/200 Iteration: 138000 Loss: 0.006 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 127/200 Iteration: 139000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 127/200 Iteration: 139000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 128/200 Iteration: 140000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 128/200 Iteration: 140000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 129/200 Iteration: 141000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 129/200 Iteration: 141000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 130/200 Iteration: 142000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 130/200 Iteration: 142000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 131/200 Iteration: 143000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 131/200 Iteration: 143000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 132/200 Iteration: 144000 Loss: 0.005 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 132/200 Iteration: 144000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 133/200 Iteration: 145000 Loss: 0.005 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 133/200 Iteration: 145000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 134/200 Iteration: 146000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 134/200 Iteration: 146000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 135/200 Iteration: 147000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 135/200 Iteration: 147000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 136/200 Iteration: 148000 Loss: 0.005 Metric: 0.000  Time: 143sec/1000iters 
+
+Epoch: 136/200 Iteration: 148000 Loss: 0.006 Metric: 0.000  Time: 133sec/1000iters 
+
+Epoch: 137/200 Iteration: 149000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 137/200 Iteration: 150000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 137/200 Iteration: 149000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 137/200 Iteration: 150000 Loss: 0.006 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 138/200 Iteration: 151000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 138/200 Iteration: 151000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 139/200 Iteration: 152000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 139/200 Iteration: 152000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 140/200 Iteration: 153000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 140/200 Iteration: 153000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 141/200 Iteration: 154000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 141/200 Iteration: 154000 Loss: 0.006 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 142/200 Iteration: 155000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 142/200 Iteration: 155000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 143/200 Iteration: 156000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 143/200 Iteration: 156000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 144/200 Iteration: 157000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 144/200 Iteration: 157000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 145/200 Iteration: 158000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 145/200 Iteration: 158000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 146/200 Iteration: 159000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 146/200 Iteration: 159000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 147/200 Iteration: 160000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 147/200 Iteration: 160000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 148/200 Iteration: 161000 Loss: 0.005 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 148/200 Iteration: 161000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 149/200 Iteration: 162000 Loss: 0.005 Metric: 0.000  Time: 142sec/1000iters 
+
+Epoch: 149/200 Iteration: 163000 Loss: 0.005 Metric: 0.000  Time: 132sec/1000iters 
+
+Epoch: 149/200 Iteration: 162000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 149/200 Iteration: 163000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 150/200 Iteration: 164000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 150/200 Iteration: 164000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 151/200 Iteration: 165000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 151/200 Iteration: 165000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 152/200 Iteration: 166000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 152/200 Iteration: 166000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 153/200 Iteration: 167000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 153/200 Iteration: 167000 Loss: 0.006 Metric: 0.000  Time: 134sec/1000iters 
+
+Epoch: 154/200 Iteration: 168000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 154/200 Iteration: 168000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 155/200 Iteration: 169000 Loss: 0.005 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 155/200 Iteration: 169000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 156/200 Iteration: 170000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 156/200 Iteration: 170000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 157/200 Iteration: 171000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 157/200 Iteration: 171000 Loss: 0.006 Metric: 0.000  Time: 134sec/1000iters 
+
+Epoch: 158/200 Iteration: 172000 Loss: 0.005 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 158/200 Iteration: 172000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 159/200 Iteration: 173000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 159/200 Iteration: 173000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 160/200 Iteration: 174000 Loss: 0.005 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 160/200 Iteration: 175000 Loss: 0.005 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 160/200 Iteration: 174000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 160/200 Iteration: 175000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 161/200 Iteration: 176000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 161/200 Iteration: 176000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 162/200 Iteration: 177000 Loss: 0.005 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 162/200 Iteration: 177000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 163/200 Iteration: 178000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 163/200 Iteration: 178000 Loss: 0.006 Metric: 0.000  Time: 143sec/1000iters 
+
+Epoch: 164/200 Iteration: 179000 Loss: 0.005 Metric: 0.000  Time: 133sec/1000iters 
+
+Epoch: 164/200 Iteration: 179000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 165/200 Iteration: 180000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 165/200 Iteration: 180000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 166/200 Iteration: 181000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 166/200 Iteration: 181000 Loss: 0.006 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 167/200 Iteration: 182000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 167/200 Iteration: 182000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 168/200 Iteration: 183000 Loss: 0.005 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 168/200 Iteration: 183000 Loss: 0.006 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 169/200 Iteration: 184000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 169/200 Iteration: 184000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 170/200 Iteration: 185000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 170/200 Iteration: 185000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 171/200 Iteration: 186000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 171/200 Iteration: 186000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 172/200 Iteration: 187000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 172/200 Iteration: 188000 Loss: 0.005 Metric: 0.000  Time: 134sec/1000iters 
+
+Epoch: 172/200 Iteration: 187000 Loss: 0.006 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 172/200 Iteration: 188000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 173/200 Iteration: 189000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 173/200 Iteration: 189000 Loss: 0.006 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 174/200 Iteration: 190000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 174/200 Iteration: 190000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 175/200 Iteration: 191000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 175/200 Iteration: 191000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 176/200 Iteration: 192000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 176/200 Iteration: 192000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 177/200 Iteration: 193000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 177/200 Iteration: 193000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 178/200 Iteration: 194000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 178/200 Iteration: 194000 Loss: 0.006 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 179/200 Iteration: 195000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 179/200 Iteration: 195000 Loss: 0.006 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 180/200 Iteration: 196000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 180/200 Iteration: 196000 Loss: 0.006 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 181/200 Iteration: 197000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 181/200 Iteration: 197000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 182/200 Iteration: 198000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 182/200 Iteration: 198000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 183/200 Iteration: 199000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 183/200 Iteration: 200000 Loss: 0.005 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 183/200 Iteration: 199000 Loss: 0.006 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 183/200 Iteration: 200000 Loss: 0.005 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 184/200 Iteration: 201000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 184/200 Iteration: 201000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 185/200 Iteration: 202000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 185/200 Iteration: 202000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 186/200 Iteration: 203000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 186/200 Iteration: 203000 Loss: 0.005 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 187/200 Iteration: 204000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 187/200 Iteration: 204000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 188/200 Iteration: 205000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
+Epoch: 188/200 Iteration: 205000 Loss: 0.005 Metric: 0.000  Time: 134sec/1000iters 
+
+Epoch: 189/200 Iteration: 206000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 189/200 Iteration: 206000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 190/200 Iteration: 207000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 190/200 Iteration: 207000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 191/200 Iteration: 208000 Loss: 0.005 Metric: 0.000  Time: 135sec/1000iters 
+
+Epoch: 191/200 Iteration: 208000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 192/200 Iteration: 209000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 192/200 Iteration: 209000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 193/200 Iteration: 210000 Loss: 0.005 Metric: 0.000  Time: 137sec/1000iters 
+
+Epoch: 193/200 Iteration: 210000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 194/200 Iteration: 211000 Loss: 0.005 Metric: 0.000  Time: 134sec/1000iters 
+
+Epoch: 194/200 Iteration: 211000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 195/200 Iteration: 212000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 195/200 Iteration: 213000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 195/200 Iteration: 212000 Loss: 0.005 Metric: 0.000  Time: 138sec/1000iters 
+
+Epoch: 195/200 Iteration: 213000 Loss: 0.005 Metric: 0.000  Time: 134sec/1000iters 
+
+Epoch: 196/200 Iteration: 214000 Loss: 0.005 Metric: 0.000  Time: 139sec/1000iters 
+
+Epoch: 196/200 Iteration: 214000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 197/200 Iteration: 215000 Loss: 0.005 Metric: 0.000  Time: 141sec/1000iters 
+
+Epoch: 197/200 Iteration: 215000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 198/200 Iteration: 216000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 198/200 Iteration: 216000 Loss: 0.005 Metric: 0.000  Time: 136sec/1000iters 
+
+Epoch: 199/200 Iteration: 217000 Loss: 0.005 Metric: 0.000  Time: 134sec/1000iters 
+
+Epoch: 199/200 Iteration: 217000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
+
