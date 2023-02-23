@@ -25,8 +25,8 @@ device = torch.device('cuda' if cuda else 'cpu')
 print(cuda, ngpu)
 
 
-path_model = os.path.join(opt.root_save, opt.type_train, opt.keyword, "model")
-path_snap = os.path.join(opt.root_save, opt.type_train, opt.keyword, "snap")
+path_model = os.path.join(opt.root_save, opt.name_data, opt.keyword, "model")
+path_snap = os.path.join(opt.root_save, opt.name_data, opt.keyword, "snap")
 os.makedirs(path_model, exist_ok=True)
 os.makedirs(path_snap, exist_ok=True)
 
@@ -134,7 +134,7 @@ while epochs < epochs_max :
             snap = (snap + 30.) * (255./60.)
             snap = np.clip(snap, 0, 255).astype(np.uint8)
             imsave("%s/%07d.png" % (path_snap, iters), snap)
-            imsave("./%s_%s_latest.png" % (opt.type_train, opt.keyword), snap)
+            imsave("./%s_%s_latest.png" % (opt.name_data, opt.keyword), snap)
             
             network.train()
 
