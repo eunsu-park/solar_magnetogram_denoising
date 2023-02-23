@@ -6,8 +6,6 @@ class TrainOption(BaseOption):
 
         self.parser.add_argument("--is_train", type=bool, default=True)
 
-        self.parser.add_argument("--keyword", type=str, default="noise",
-            help="keyword for identification")
 
         self.parser.add_argument("--patch_size", type=int, default=256,
             help="size of random patch for training")

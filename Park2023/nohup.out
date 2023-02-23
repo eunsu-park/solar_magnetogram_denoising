@@ -1038,3 +1038,27 @@ Epoch: 199/200 Iteration: 217000 Loss: 0.005 Metric: 0.000  Time: 134sec/1000ite
 
 Epoch: 199/200 Iteration: 217000 Loss: 0.005 Metric: 0.000  Time: 140sec/1000iters 
 
+usage: pipeline.py [-h] [--seed SEED] [--name_data NAME_DATA]
+                   [--keyword KEYWORD] [--gpu_ids GPU_IDS] [--ch_inp CH_INP]
+                   [--ch_tar CH_TAR] [--minmax MINMAX] [--nb_down NB_DOWN]
+                   [--root_data ROOT_DATA] [--root_save ROOT_SAVE]
+                   [--is_train IS_TRAIN] [--patch_size PATCH_SIZE]
+                   [--loss_type LOSS_TYPE] [--metric_type METRIC_TYPE]
+                   [--batch_size BATCH_SIZE] [--num_workers NUM_WORKERS]
+                   [--lr LR] [--beta1 BETA1] [--beta2 BETA2] [--eps EPS]
+                   [--weight_decay WEIGHT_DECAY] [--nb_epochs NB_EPOCHS]
+                   [--nb_epochs_decay NB_EPOCHS_DECAY]
+                   [--report_freq REPORT_FREQ]
+pipeline.py: error: unrecognized arguments: %
+usage: pipeline.py [-h] [--seed SEED] [--name_data NAME_DATA]
+                   [--keyword KEYWORD] [--gpu_ids GPU_IDS] [--ch_inp CH_INP]
+                   [--ch_tar CH_TAR] [--minmax MINMAX] [--nb_down NB_DOWN]
+                   [--root_data ROOT_DATA] [--root_save ROOT_SAVE]
+                   [--is_train IS_TRAIN] [--patch_size PATCH_SIZE]
+                   [--loss_type LOSS_TYPE] [--metric_type METRIC_TYPE]
+                   [--batch_size BATCH_SIZE] [--num_workers NUM_WORKERS]
+                   [--lr LR] [--beta1 BETA1] [--beta2 BETA2] [--eps EPS]
+                   [--weight_decay WEIGHT_DECAY] [--nb_epochs NB_EPOCHS]
+                   [--nb_epochs_decay NB_EPOCHS_DECAY]
+                   [--report_freq REPORT_FREQ]
+pipeline.py: error: unrecognized arguments: %

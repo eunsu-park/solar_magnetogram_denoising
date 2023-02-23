@@ -17,7 +17,10 @@ class FitGaussian(object):
         tmp = np.histogram(data.flatten(), bins=np.linspace(-30, 30, 61))
         x = np.linspace(-29.5, 29.5, 60)
         popt, _ = curve_fit(func, x, tmp[0])
-        return abs(popt[2])
+        amp = popt[0]
+        loc = popt[1]
+        scale = abs(popt[2])
+        return amp, loc, scale
 
 class GenerateGaussian(object):
     def __call__(self, loc, scale, size):
@@ -47,9 +50,9 @@ class RandomCrop(object):
 class BaseDataset(data.Dataset):
     def __init__(self, opt):
         if opt.is_train == True :
-            pattern = '%s/%s/train/*.fits'%(opt.name_data, opt.root_data)
+            pattern = '%s/%s/train/*.fits'%(opt.root_data, opt.name_data)
         else :
-            pattern = '%s/%s/test/*.fits'%(opt.name_data, opt.root_data)
+            pattern = '%s/%s/test/*.fits'%(opt.root_data, opt.name_data)
         self.list_data = glob(pattern)
         self.nb_data = len(self.list_data)
 
@@ -71,7 +74,8 @@ class GaussianDataset(BaseDataset):
     def __getitem__(self, idx):
         data = self.read_fits(self.list_data[idx])
         patch = self.random_crop(data)[None, :, :]
-        noise = self.generate_gaussian(loc=0, scale=self.fit_gaussian(patch), size=patch.shape)
+        amp, loc, scale = self.fit_gaussian(patch)
+        noise = self.generate_gaussian(loc=loc, scale=scale, size=patch.shape)
         gaussian = patch.copy() + noise.copy()
         
         patch = self.compose(patch)
@@ -92,7 +96,7 @@ if __name__ == "__main__" :
 
     opt = TrainOption().parse()
 
-    dataset = GaussianDataset(opt, is_train=True)
+    dataset = GaussianDataset(opt)
     dataloader = data.DataLoader(dataset, batch_size=8, num_workers=16)
     print(len(dataset), len(dataloader))
 
