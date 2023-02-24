@@ -27,11 +27,14 @@ class TrainOption(BaseOption):
         self.parser.add_argument("--weight_decay", type=float, default=0.001,
             help="l2 regularization")
 
-        self.parser.add_argument("--nb_epochs", type=int, default=100,
+        self.parser.add_argument("--nb_epochs", type=int, default=50,
             help="# of epochs with initial learning rate")
-        self.parser.add_argument("--nb_epochs_decay", type=int, default=100,
+        self.parser.add_argument("--nb_epochs_decay", type=int, default=50,
             help="# of epochs with linearly decaying learning rate")
 
         self.parser.add_argument("--report_freq", type=int, default=1000,
             help="report frequency in iterations")
+
+        self.parser.add_argument("--save_freq", type=int, default=1,
+            help="save frequency in epochs")
 

@@ -25,12 +25,12 @@ device = torch.device('cuda' if cuda else 'cpu')
 print(cuda, ngpu)
 
 
-path_model = os.path.join(opt.root_save, opt.name_data, opt.model_out, "model")
-path_snap = os.path.join(opt.root_save, opt.name_data, opt.model_out, "snap")
+path_model = os.path.join(opt.root_save, opt.name_data, "model")
+path_snap = os.path.join(opt.root_save, opt.name_data, "snap")
 os.makedirs(path_model, exist_ok=True)
 os.makedirs(path_snap, exist_ok=True)
 
-path_logger = "./%s_%s.log" % (opt.name_data, opt.model_out)
+path_logger = "./%s.log" % (opt.name_data)
 logger = open(path_logger, "w")
 logger.close()
 
@@ -71,33 +71,17 @@ epochs_max = opt.nb_epochs + opt.nb_epochs_decay
 while epochs < epochs_max :
     for idx, (patch_, noise_, gaussian_) in enumerate(dataloader):
 
-        if opt.model_out == "noise" :
-
-            optim.zero_grad()
-            inp = gaussian_.clone().to(device)
-            tar = patch_.clone().to(device)
-            noise = network(inp)
-            gen = inp - noise
-            loss = loss_function(gen, tar)
-            metric = metric_function(gen, tar)
-            loss.backward()
-            optim.step()
-            losses.append(loss.item())
-            metrics.append(metric.item())
-
-
-        elif opt.model_out == "denoised" :
-
-            optim.zero_grad()
-            inp = gaussian_.clone().to(device)
-            tar = patch_.clone().to(device)
-            gen = network(inp)
-            loss = loss_function(gen, tar)
-            metric = metric_function(gen, tar)
-            loss.backward()
-            optim.step()
-            losses.append(loss.item())
-            metrics.append(metric.item())
+        optim.zero_grad()
+        inp = gaussian_.clone().to(device)
+        tar = patch_.clone().to(device)
+        noise = network(inp)
+        gen = inp - noise
+        loss = loss_function(gen, tar)
+        metric = metric_function(gen, tar)
+        loss.backward()
+        optim.step()
+        losses.append(loss.item())
+        metrics.append(metric.item())
 
         iters += 1
 
@@ -110,31 +94,20 @@ while epochs < epochs_max :
             logger.write(palette % paint)
             logger.close()
 
-
             network.eval()
 
             inp = patch_.clone().to(device)
 
-            if opt.model_out == "noise" :
-
-                noise = generation(network, inp)
-                inp = inp.cpu().numpy()[0][0]
-                noise = noise.cpu().numpy()[0][0]
-                gen = inp - noise
-
-            elif opt.model_out == "denoised" :
-
-                gen = generation(network, inp)
-                inp = inp.cpu().numpy()[0][0]
-                gen = gen.cpu().numpy()[0][0]
-                noise = inp - gen
+            noise = generation(network, inp)
+            inp = inp.cpu().numpy()[0][0]
+            noise = noise.cpu().numpy()[0][0]
+            gen = inp - noise
 
             snap = np.hstack([inp, gen, noise])
             snap = snap * opt.minmax
             snap = (snap + 30.) * (255./60.)
             snap = np.clip(snap, 0, 255).astype(np.uint8)
-            imsave("%s/%07d.png" % (path_snap, iters), snap)
-            imsave("./%s_%s_latest.png" % (opt.name_data, opt.model_out), snap)
+            imsave("./%s_latest.png" % (opt.name_data), snap)
             
             network.train()
 
@@ -145,16 +118,37 @@ while epochs < epochs_max :
     epochs += 1
     scheduler.step()
 
-    if ngpu > 1 :
-        state_network = network.module.state_dict()
-    else :
-        state_network = network.state_dict()
-    state_optim = optim.state_dict()
-    state_scheduler = scheduler.state_dict()
 
-    state = {'network':state_network,
-        'optimizer':state_optim,
-        'scheduler':state_scheduler}
+    network.eval()
 
-    torch.save(state, '%s/%04d.pt' % (path_model, epochs))
+    inp = patch_.clone().to(device)
+
+    noise = generation(network, inp)
+    inp = inp.cpu().numpy()[0][0]
+    noise = noise.cpu().numpy()[0][0]
+    gen = inp - noise
+
+    snap = np.hstack([inp, gen, noise])
+    snap = snap * opt.minmax
+    snap = (snap + 30.) * (255./60.)
+    snap = np.clip(snap, 0, 255).astype(np.uint8)
+    imsave("%s/%04d.png" % (path_snap, epochs), snap)
+    
+    network.train()
+
+
+    if epochs % opt.save_freq == 0 :
+
+        if ngpu > 1 :
+            state_network = network.module.state_dict()
+        else :
+            state_network = network.state_dict()
+        state_optim = optim.state_dict()
+        state_scheduler = scheduler.state_dict()
+
+        state = {'network':state_network,
+            'optimizer':state_optim,
+            'scheduler':state_scheduler}
+
+        torch.save(state, '%s/%04d.pt' % (path_model, epochs))
 
