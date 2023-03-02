@@ -10,7 +10,7 @@ class BaseOption():
             help="random seed")
 
         self.parser.add_argument("--name_data", type=str, default="M_45s",
-            help="name of data, M_45s, M_720s")
+            help="name of data, M_45s, M_720s, BT, BR, BP")
         
         self.parser.add_argument("--gpu_ids", type=str, default="0",
             help="gpu id, ex) 0,2,3")
@@ -25,10 +25,10 @@ class BaseOption():
             help="# of down samplings oin UNet")
 
         self.parser.add_argument("--root_data", type=str,
-            default=os.path.join("/home/eunsu/Drives/Dataset/denoising"),
+            default=os.path.join("/data/eunsu/Dataset/denoising"),
             help="path to load data")
         self.parser.add_argument("--root_save", type=str,
-            default=os.path.join("/home/eunsu/Drives/Result/denoising"),
+            default=os.path.join("/data/eunsu/Result/denoising"),
             help="path to save result")
 
     def parse(self):

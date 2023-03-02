@@ -7,7 +7,7 @@ import torch.nn.functional as F
 from torchvision.transforms import Compose
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
-
+from scipy.io import readsav
 
 def func(x, a, b, c):
     return a*np.exp(-(x-b)**2/(2*c**2))
@@ -35,6 +35,14 @@ class Normalize(object):
 class ReadFits(object):
     def __call__(self, fits):
         return Map(fits).data.astype(np.float64)
+    
+class ReadSav(object):
+    def __init__(self, name_data):
+        self.name_data = name_data
+    def __call__(self, file_sav):
+        sav = readsav(file_sav)
+        return sav[self.name_data].copy()
+        
 
 class Cast(object):
     def __call__(self, data):
@@ -49,16 +57,28 @@ class RandomCrop(object):
     
 class BaseDataset(data.Dataset):
     def __init__(self, opt):
+        if opt.name_data in ["M_45s", "M_720s"] :
+            ext = "fits"
+            self.reader = ReadFits()
+            pattern = '%s/%s'%(opt.root_data, opt.name_data)
+            self.fit_minmax = 30.
+        elif opt.name_data in ["BT", "BR", "BP"] :
+            ext = "sav"
+            self.reader = ReadSav(opt.name_data)
+            pattern = '%s/B_720s'%(opt.root_data)
+            self.fit_minmax = 100
+        print(ext)
         if opt.is_train == True :
-            pattern = '%s/%s/train/*.fits'%(opt.root_data, opt.name_data)
+            pattern = '%s/train/*.%s'%(pattern, ext)
         else :
-            pattern = '%s/%s/test/*.fits'%(opt.root_data, opt.name_data)
+            pattern = '%s/%s/*.%s'%(pattern, ext)
         self.list_data = glob(pattern)
         self.nb_data = len(self.list_data)
 
-        self.read_fits = ReadFits()
         self.random_crop = RandomCrop(opt.patch_size)
         self.compose = Compose([Normalize(opt.minmax), Cast()])
+        
+        self.fit_minmax = opt.fit_
 
     def __len__(self):
         return self.nb_data
@@ -72,7 +92,7 @@ class GaussianDataset(BaseDataset):
         self.generate_gaussian = GenerateGaussian()
 
     def __getitem__(self, idx):
-        data = self.read_fits(self.list_data[idx])
+        data = self.reader(self.list_data[idx])
         patch = self.random_crop(data)[None, :, :]
         amp, loc, scale = self.fit_gaussian(patch)
         noise = self.generate_gaussian(loc=loc, scale=scale, size=patch.shape)
