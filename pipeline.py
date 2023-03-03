@@ -15,7 +15,7 @@ def func(x, a, b, c):
 
 
 class FitGaussian(object):
-    def __init__(self, minmax=100):
+    def __init__(self, minmax=150):
         self.minmax=minmax
     def __call__(self, data):
         tmp = np.histogram(data.flatten(), bins=np.linspace(-self.minmax, self.minmax, self.minmax+1))
@@ -28,7 +28,7 @@ class FitGaussian(object):
 
 
 class FitMultiGaussian(object):
-    def __init__(self, minmax=100):
+    def __init__(self, minmax=150):
         self.minmax=minmax
 
     def fit_negative(self, data_):
