@@ -14,9 +14,12 @@ def get_loss_function(loss_type, reduction='mean'):
     return loss_function
 
 def define_dataset_and_model(opt):
-    from pipeline import GaussianDataset as Dataset
+    from pipeline import GaussianDataset, MultiGaussianDataset
     from models.pix2pix_unet import UnetGenerator as PUNet, init_weights
-    dataset = Dataset(opt)
+    if opt.name_data in ["M_45s", "M_720s", "BR"] :
+        dataset = GaussianDataset(opt)
+    elif opt.name_data in ["BT", "BP"] :
+        dataset = MultiGaussianDataset(opt)
     network = PUNet(opt.ch_inp, opt.ch_tar, opt.nb_down, 64, use_dropout=True)
     init_weights(network)
     dataloader = data.DataLoader(

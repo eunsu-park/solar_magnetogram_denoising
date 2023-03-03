@@ -9,18 +9,55 @@ from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 from scipy.io import readsav
 
+
 def func(x, a, b, c):
     return a*np.exp(-(x-b)**2/(2*c**2))
 
+
 class FitGaussian(object):
+    def __init__(self, minmax=100):
+        self.minmax=minmax
     def __call__(self, data):
-        tmp = np.histogram(data.flatten(), bins=np.linspace(-30, 30, 61))
-        x = np.linspace(-29.5, 29.5, 60)
+        tmp = np.histogram(data.flatten(), bins=np.linspace(-self.minmax, self.minmax, self.minmax+1))
+        x = np.linspace(-self.minmax+0.5, self.minmax-0.5, self.minmax)
         popt, _ = curve_fit(func, x, tmp[0])
         amp = popt[0]
         loc = popt[1]
         scale = abs(popt[2])
         return amp, loc, scale
+
+
+class FitMultiGaussian(object):
+    def __init__(self, minmax=100):
+        self.minmax=minmax
+
+    def fit_negative(self, data_):
+        w = np.where(data_ <= 0.)
+        data = data_[w]
+        tmp = np.histogram(data.flatten(), bins=np.linspace(-self.minmax, self.minmax, self.minmax+1))
+        x = np.linspace(-self.minmax+0.5, self.minmax-0.5, self.minmax)
+        popt, _ = curve_fit(func, x, tmp[0])
+        amp = popt[0]
+        loc = popt[1]
+        scale = abs(popt[2])
+        return amp, loc, scale
+
+    def fit_positive(self, data_):
+        w = np.where(data_ >= 0.)
+        data = data_[w]
+        tmp = np.histogram(data.flatten(), bins=np.linspace(-self.minmax, self.minmax, self.minmax+1))
+        x = np.linspace(-self.minmax+0.5, self.minmax-0.5, self.minmax)
+        popt, _ = curve_fit(func, x, tmp[0])
+        amp = popt[0]
+        loc = popt[1]
+        scale = abs(popt[2])
+        return amp, loc, scale
+
+    def __call__(self, data):
+        popt_negative = self.fit_negative(data)
+        popt_positive = self.fit_positive(data)
+        return popt_negative, popt_positive
+
 
 class GenerateGaussian(object):
     def __call__(self, loc, scale, size):
@@ -78,8 +115,6 @@ class BaseDataset(data.Dataset):
         self.random_crop = RandomCrop(opt.patch_size)
         self.compose = Compose([Normalize(opt.minmax), Cast()])
         
-        self.fit_minmax = opt.fit_
-
     def __len__(self):
         return self.nb_data
 
@@ -94,8 +129,31 @@ class GaussianDataset(BaseDataset):
     def __getitem__(self, idx):
         data = self.reader(self.list_data[idx])
         patch = self.random_crop(data)[None, :, :]
-        amp, loc, scale = self.fit_gaussian(patch)
-        noise = self.generate_gaussian(loc=loc, scale=scale, size=patch.shape)
+        popt = self.fit_gaussian(patch)
+        noise = self.generate_gaussian(loc=popt[1], scale=popt[2], size=patch.shape)
+        gaussian = patch.copy() + noise.copy()
+        
+        patch = self.compose(patch)
+        noise = self.compose(noise)
+        gaussian = self.compose(gaussian)
+
+        return patch, noise, gaussian
+
+class MultiGaussianDataset(BaseDataset):
+    def __init__(self, opt):
+        super(MultiGaussianDataset, self).__init__(opt)
+        self.fit_gaussian = FitMultiGaussian()
+        self.generate_gaussian = GenerateGaussian()
+
+    def __getitem__(self, idx):
+        data = self.reader(self.list_data[idx])
+        patch = self.random_crop(data)[None, :, :]
+        popt_negative, popt_positive = self.fit_gaussian(patch)
+        noise_negative = self.generate_gaussian(
+            loc=popt_negative[1], scale=popt_negative[2], size=patch.shape)
+        noise_positive = self.generate_gaussian(
+            loc=popt_positive[1], scale=popt_positive[2], size=patch.shape)
+        noise = noise_negative + noise_positive
         gaussian = patch.copy() + noise.copy()
         
         patch = self.compose(patch)
@@ -112,13 +170,11 @@ if __name__ == "__main__" :
     from imageio import imsave
     import matplotlib.animation as animation
     import matplotlib.pyplot as plt
+    from utils.others import define_dataset_and_model
 
 
     opt = TrainOption().parse()
-
-    dataset = GaussianDataset(opt)
-    dataloader = data.DataLoader(dataset, batch_size=8, num_workers=16)
-    print(len(dataset), len(dataloader))
+    dataloader, network = define_dataset_and_model(opt)
 
     imgs = []
 
