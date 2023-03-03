@@ -8,16 +8,16 @@ from scipy.optimize import curve_fit
 def func(x, a, b, c):
     return a*np.exp(-(x-b)**2/(2*c**2))
 
-def multifunc(x, a0, b0, c0, a1, b1, c1):
-    return a0*np.exp(-(x-b0)**2/(2*c0**2)) + a1*np.exp(-(x-b1)**2/(2*c1**2))
 
 
 minmax=100
 
 class FitGaussian(object):
-    def __call__(self, data, minmax):
-        tmp = np.histogram(data.flatten(), bins=np.linspace(-minmax, minmax, 2*minmax+1))
-        x = np.linspace(-minmax+0.5, minmax-0.5, 2*minmax)
+    def __init__(self, minmax):
+        self.minmax = minmax
+    def __call__(self, data):
+        tmp = np.histogram(data.flatten(), bins=np.linspace(-self.minmax, self.minmax, self.minmax+1))
+        x = np.linspace(-self.minmax+0.5, self.minmax-0.5, self.minmax)
         popt, _ = curve_fit(func, x, tmp[0])
         amp = popt[0]
         loc = popt[1]
@@ -25,16 +25,37 @@ class FitGaussian(object):
         return popt, tmp
 #        return amp, loc, scale
 
+
 class FitMultiGaussian(object):
-    def __call__(self, data, minmax):
-        tmp = np.histogram(data.flatten(), bins=np.linspace(-minmax, minmax, 2*minmax+1))
-        x = np.linspace(-minmax+0.5, minmax-0.5, 2*minmax)
-        popt, _ = curve_fit(multifunc, x, tmp[0])
+    def __init__(self, minmax):
+        self.minmax = minmax
+
+    def fit_negative(self, data_):
+        w = np.where(data_ <= 0.)
+        data = data_[w]
+        tmp = np.histogram(data.flatten(), bins=np.linspace(-self.minmax, self.minmax, self.minmax+1))
+        x = np.linspace(-self.minmax+0.5, self.minmax-0.5, self.minmax)
+        popt, _ = curve_fit(func, x, tmp[0])
         amp = popt[0]
         loc = popt[1]
         scale = abs(popt[2])
         return popt, tmp
 
+    def fit_positive(self, data_):
+        w = np.where(data_ >= 0.)
+        data = data_[w]
+        tmp = np.histogram(data.flatten(), bins=np.linspace(-self.minmax, self.minmax, self.minmax+1))
+        x = np.linspace(-self.minmax+0.5, self.minmax-0.5, self.minmax)
+        popt, _ = curve_fit(func, x, tmp[0])
+        amp = popt[0]
+        loc = popt[1]
+        scale = abs(popt[2])
+        return popt, tmp
+
+    def __call__(self, data):
+        popt_negative, tmp_negative = self.fit_negative(data)
+        popt_positive, tmp_positive = self.fit_positive(data)
+        return popt_negative, tmp_negative, popt_positive, tmp_positive
 
 
 f = "hmi.M_45s.2011-01-01-00-00-00.fits"
@@ -58,8 +79,8 @@ print(bp.shape)
 
 
 def plot(data, minmax):
-    x = np.linspace(-minmax+0.5, minmax-0.5, 2*minmax)
-    popt, tmp = FitGaussian()(data, minmax)
+    x = np.linspace(-minmax+0.5, minmax-0.5, minmax)
+    popt, tmp = FitGaussian(minmax)(data)
     print(popt)
     y = func(x, *popt)
     plt.plot(x, y, 'r-')
@@ -67,12 +88,16 @@ def plot(data, minmax):
     plt.show()
 
 def multiplot(data, minmax):
-    x = np.linspace(-minmax+0.5, minmax-0.5, 2*minmax)
-    popt, tmp = FitMultiGaussian()(data, minmax)
-    print(popt)
-    y = multifunc(x, *popt)
-    plt.plot(x, y, 'r-')
-    plt.plot(x, tmp[0], 'b-')
+    x = np.linspace(-minmax+0.5, minmax-0.5, minmax)
+    popt_negative, tmp_negative, popt_positive, tmp_positive = FitMultiGaussian(minmax)(data)
+    print(popt_negative)
+    print(popt_positive)
+    y_negative = func(x, *popt_negative)
+    y_positive = func(x, *popt_positive)
+    plt.plot(x, y_negative, 'r-')
+    plt.plot(x, y_positive, 'r--')
+    plt.plot(x, tmp_negative[0], 'b-')
+    plt.plot(x, tmp_positive[0], 'b--')
     plt.show()
 
 plot(m45, minmax)
