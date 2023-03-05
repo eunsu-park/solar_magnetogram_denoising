@@ -19,7 +19,7 @@ class FitGaussian(object):
         amp = popt[0]
         loc = popt[1]
         scale = abs(popt[2])
-        return amp, loc, scale, tmp
+        return (amp, loc, scale), tmp
 
 
 class FitMultiGaussian(object):
@@ -35,7 +35,7 @@ class FitMultiGaussian(object):
         amp = popt[0]
         loc = popt[1]
         scale = abs(popt[2])
-        return amp, loc, scale, tmp
+        return (amp, loc, scale), tmp
 
     def fit_positive(self, data_):
         w = np.where(data_ >= 0.)
@@ -46,18 +46,16 @@ class FitMultiGaussian(object):
         amp = popt[0]
         loc = popt[1]
         scale = abs(popt[2])
-        return amp, loc, scale, tmp
+        return (amp, loc, scale), tmp
 
     def __call__(self, data):
-        popt_negative = self.fit_negative(data)
-        popt_positive = self.fit_positive(data)
-        return popt_negative, popt_positive
+        popt_negative, tmp_negative = self.fit_negative(data)
+        popt_positive, tmp_positive = self.fit_positive(data)
+        return popt_negative, tmp_negative, popt_positive, tmp_positive
     
 def plot(data, minmax):
     x = np.linspace(-minmax+0.5, minmax-0.5, minmax)
-    result = FitGaussian()(data)
-    popt = (result[0], result[1], result[2])
-    tmp = result[3]
+    popt, tmp = FitGaussian()(data)
     print(popt)
     y = func(x, *popt)
     plt.plot(x, y, 'r-')
@@ -68,21 +66,20 @@ def plot(data, minmax):
 def multiplot(data, minmax):
     x = np.linspace(-minmax+0.5, minmax-0.5, minmax)
     result = FitMultiGaussian(minmax)(data)
-    result_negative = result[0]
-    result_positive = result[1]
-    popt_negative = (result_negative[0], result_negative[1], result_negative[2])
-    tmp_negative = result_negative[3]
-    popt_positive = (result_positive[0], result_positive[1], result_positive[2])
-    tmp_positive = result_positive[3]
+    popt_negative, tmp_negative, popt_positive, tmp_positive = result
     print(popt_negative)
     print(popt_positive)
     y_negative = func(x, *popt_negative)
     y_positive = func(x, *popt_positive)
-    plot = plt.plot(x, y_negative, 'r-')
+    y_ = y_negative + y_positive
+    plt.plot(x, y_negative, 'r-')
     plt.plot(x, y_positive, 'r--')
+    plt.plot(x, y_, 'g-')
     plt.plot(x, tmp_negative[0], 'b-')
     plt.plot(x, tmp_positive[0], 'b--')
-    return plot
+    plt.show()
+
+
 
 
 
@@ -96,21 +93,73 @@ if __name__ == "__main__" :
     name_data = 'BT'
     minmax = 100
 
-    imgs = []
+    f = "hmi.M_45s.2011-01-01-00-00-00.fits"
+    g = "hmi.M_720s.2011-01-01-00-00-00.fits"
+    h = "hmi.vector.2011-01-01-00-00-00.sav"
 
-    fig = plt.figure()
-    for idx in range(len(list_)):
-        file_ = list_[idx]
-        data = readsav(file_)[name_data].copy()[2048-1024:2048+1024, 2048-1024:2048+1024]
-        img = multiplot(data, minmax)
-        imgs.append([img])
 
-        if idx == 1000 :
-            break
+    sav = readsav(h)
 
-    animate = animation.ArtistAnimation(fig, imgs, interval=500, blit=True)
-    animate.save('%s.gif' % (name_data))
-    plt.close()
+    m45 = Map(f).data[2048-512:2048+512, 2048-512:2048+512]
+    m720 = Map(g).data[2048-512:2048+512, 2048-512:2048+512]
+
+    br = sav["BR"].copy()[2048-512:2048+512, 2048-512:2048+512]
+    bt = sav["BT"].copy()[2048-512:2048+512, 2048-512:2048+512]
+    bp = sav["BP"].copy()[2048-512:2048+512, 2048-512:2048+512]
+
+    print(br.shape)
+    print(bt.shape)
+    print(bp.shape)
+
+
+    # plot(m45, minmax)
+    # plot(m720, minmax)
+    # plot(br, minmax)
+    multiplot(bt, minmax)
+    multiplot(bp, minmax)
+
+
+
+    # img = np.hstack([m45, m720, br, bt, bp])
+    # plt.imshow(img, vmin=-30, vmax=30, cmap="gray")
+    # plt.show()
+
+
+    # imgs = []
+
+    # fig = plt.figure()
+    # for idx in range(len(list_)):
+    #     file_ = list_[idx]
+    #     data = readsav(file_)[name_data].copy()[2048-1024:2048+1024, 2048-1024:2048+1024]
+
+    #     x = np.linspace(-minmax+0.5, minmax-0.5, minmax)
+    #     result = FitMultiGaussian(minmax)(data)
+    #     result_negative = result[0]
+    #     result_positive = result[1]
+    #     popt_negative = (result_negative[0], result_negative[1], result_negative[2])
+    #     tmp_negative = result_negative[3]
+    #     popt_positive = (result_positive[0], result_positive[1], result_positive[2])
+    #     tmp_positive = result_positive[3]
+    #     print(popt_negative)
+    #     print(popt_positive)
+    #     y_negative = func(x, *popt_negative)
+    #     y_positive = func(x, *popt_positive)
+    #     plot = plt.plot(x, y_negative, 'r-', animated=True)
+    #     plt.plot(x, y_positive, 'r--')
+    #     plt.plot(x, tmp_negative[0], 'b-')
+    #     plt.plot(x, tmp_positive[0], 'b--')
+
+    #     plt.show()
+
+    #     img = multiplot(data, minmax)
+    #     imgs.append([img])
+
+    #     if idx == 100 :
+    #         break
+
+    # animate = animation.ArtistAnimation(fig, imgs, interval=500, blit=True)
+    # animate.save('%s.gif' % (name_data))
+    # plt.close()
 
 
     
@@ -118,35 +167,4 @@ if __name__ == "__main__" :
 
 
 
-
-# f = "hmi.M_45s.2011-01-01-00-00-00.fits"
-# g = "hmi.M_720s.2011-01-01-00-00-00.fits"
-# h = "hmi.vector.2011-01-01-00-00-00.sav"
-
-
-# sav = readsav(h)
-
-# m45 = Map(f).data[2048-512:2048+512, 2048-512:2048+512]
-# m720 = Map(g).data[2048-512:2048+512, 2048-512:2048+512]
-
-# br = sav["BR"].copy()[2048-512:2048+512, 2048-512:2048+512]
-# bt = sav["BT"].copy()[2048-512:2048+512, 2048-512:2048+512]
-# bp = sav["BP"].copy()[2048-512:2048+512, 2048-512:2048+512]
-
-# print(br.shape)
-# print(bt.shape)
-# print(bp.shape)
-
-
-# plot(m45, minmax)
-# plot(m720, minmax)
-# plot(br, minmax)
-# multiplot(bt, minmax)
-# multiplot(bp, minmax)
-
-
-
-#img = np.hstack([m45, m720, br, bt, bp])
-#plt.imshow(img, vmin=-30, vmax=30, cmap="gray")
-#plt.show()
 
