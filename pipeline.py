@@ -149,13 +149,18 @@ class MultiGaussianDataset(BaseDataset):
         data = self.reader(self.list_data[idx])
         patch = self.random_crop(data)[None, :, :]
         popt_negative, popt_positive = self.fit_gaussian(patch)
-        noise_negative = self.generate_gaussian(
-            loc=popt_negative[1], scale=popt_negative[2], size=patch.shape)
-        noise_positive = self.generate_gaussian(
-            loc=popt_positive[1], scale=popt_positive[2], size=patch.shape)
-        noise = noise_negative + noise_positive
+        # noise_negative = self.generate_gaussian(
+        #     loc=popt_negative[1], scale=popt_negative[2], size=patch.shape)
+        # noise_positive = self.generate_gaussian(
+        #     loc=popt_positive[1], scale=popt_positive[2], size=patch.shape)
+        # noise = noise_negative + noise_positive
+        # gaussian = patch.copy() + noise.copy()
+
+        loc = popt_negative[1] + popt_positive[1]
+        scale = (abs(popt_negative[1]) + abs(popt_positive[1]))/2.
+        noise = np.random.normal(loc=loc, scale=scale, size=patch.shape)
         gaussian = patch.copy() + noise.copy()
-        
+
         patch = self.compose(patch)
         noise = self.compose(noise)
         gaussian = self.compose(gaussian)

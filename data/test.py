@@ -67,14 +67,22 @@ def multiplot(data, minmax):
     x = np.linspace(-minmax+0.5, minmax-0.5, minmax)
     result = FitMultiGaussian(minmax)(data)
     popt_negative, tmp_negative, popt_positive, tmp_positive = result
+    amp = popt_negative[0] + popt_positive[0]
+    loc = popt_negative[1] + popt_positive[1]
+    scale = (abs(popt_negative[1]) + abs(popt_positive[1]))/2.
+#    scale = ((abs(popt_negative[1]) + popt_negative[2]) + (abs(popt_positive[1]) + popt_positive[2]))/2.
+#    scale = (popt_negative[2] + popt_positive[2])/2.
     print(popt_negative)
     print(popt_positive)
+    print(amp, loc, scale)
     y_negative = func(x, *popt_negative)
     y_positive = func(x, *popt_positive)
     y_ = y_negative + y_positive
+    y__ = func(x, *(amp, loc, scale))
     plt.plot(x, y_negative, 'r-')
     plt.plot(x, y_positive, 'r--')
     plt.plot(x, y_, 'g-')
+    plt.plot(x, y__, 'k-')
     plt.plot(x, tmp_negative[0], 'b-')
     plt.plot(x, tmp_positive[0], 'b--')
     plt.show()
@@ -91,7 +99,7 @@ if __name__ == "__main__" :
 
     list_ = sorted(glob('/data/eunsu/Dataset/denoising/B_720s/train/*.sav'))
     name_data = 'BT'
-    minmax = 100
+    minmax = 150
 
     f = "hmi.M_45s.2011-01-01-00-00-00.fits"
     g = "hmi.M_720s.2011-01-01-00-00-00.fits"
