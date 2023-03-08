@@ -9,8 +9,8 @@ class BaseOption():
         self.parser.add_argument("--seed", type=int, default=2331,
             help="random seed")
 
-        self.parser.add_argument("--name_data", type=str, default="M_45s",
-            help="name of data, M_45s, M_720s, BT, BR, BP")
+        self.parser.add_argument("--name_data", type=str, default="los_45",
+            help="name of data, los_45, los_720, los, inclination, azimuth, disambig, field, vector_r, vector_t, vector_p")
         
         self.parser.add_argument("--gpu_ids", type=str, default="0",
             help="gpu id, ex) 0,2,3")
@@ -18,8 +18,6 @@ class BaseOption():
             help="number of input channel")
         self.parser.add_argument("--ch_tar", type=int, default=1,
             help="number of target channel")
-        self.parser.add_argument("--minmax", type=float, default=1000,
-            help="data normalization factor")
 
         self.parser.add_argument("--nb_down", type=int, default=8,
             help="# of down samplings oin UNet")
@@ -32,4 +30,57 @@ class BaseOption():
             help="path to save result")
 
     def parse(self):
-        return self.parser.parse_args()
+
+        opt = self.parser.parse_args()
+
+        if opt.name_data == "los_45" :
+            opt.path_data = "%s/los_45" % (opt.root_data)
+            opt.pattern = "*.los_45.npz"
+            opt.minmax = 1000.
+
+        elif opt.name_data == "los_720" :
+            opt.path_data = "%s/los_720" % (opt.root_data)
+            opt.pattern = "*.los_720.npz"
+            opt.minmax = 1000.
+
+        elif opt.name_data == "los" :
+            opt.path_data = "%s/los_*" % (opt.root_data)
+            opt.pattern = "*.los_*.npz"
+            opt.minmax = 1000.
+
+        elif opt.name_data == "inclination" :
+            opt.path_data = "%s/B_720s" % (opt.root_data)
+            opt.pattern = "*.inclination.npy"
+            opt.minmax = 1000.
+
+        elif opt.name_data == "azimuth" :
+            opt.path_data = "%s/B_720s" % (opt.root_data)
+            opt.pattern = "*.azimuth.npy"
+            opt.minmax = 1000.
+
+        elif opt.name_data == "disambig" :
+            opt.path_data = "%s/B_720s" % (opt.root_data)
+            opt.pattern = "*.disambig.npy"
+            opt.minmax = 1000.
+
+        elif opt.name_data == "field" :
+            opt.path_data = "%s/B_720s" % (opt.root_data)
+            opt.pattern = "*.field.npy"
+            opt.minmax = 1000.
+
+        elif opt.name_data == "vector_r" :
+            opt.path_data = "%s/Vector" % (opt.root_data)
+            opt.pattern = "*vector_r.npy"
+            opt.minmax = 1000.
+
+        elif opt.name_data == "vector_t" :
+            opt.path_data = "%s/Vector" % (opt.root_data)
+            opt.pattern = "*.sav"
+            opt.minmax = 1000.
+
+        elif opt.name_data == "vector_p" :
+            opt.path_data = "%s/Vector" % (opt.root_data)
+            opt.pattern = "*.sav"
+            opt.minmax = 1000.
+
+        return opt

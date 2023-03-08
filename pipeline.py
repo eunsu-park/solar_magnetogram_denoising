@@ -10,6 +10,10 @@ import matplotlib.pyplot as plt
 from scipy.io import readsav
 
 
+class GenerateGaussian(object):
+    def __call__(self, loc, scale, size):
+        return np.random.normal(loc=loc, scale=scale, size=size)
+
 def func(x, a, b, c):
     return a*np.exp(-(x-b)**2/(2*c**2))
 
@@ -25,6 +29,84 @@ class FitGaussian(object):
         loc = popt[1]
         scale = abs(popt[2])
         return amp, loc, scale
+
+
+
+class ReadFits(object):
+    def __call__(self, fits):
+        return Map(fits).data.astype(np.float64)
+    
+class ReadSav(object):
+    def __init__(self, name_data):
+        self.name_data = name_data
+    def __call__(self, file_sav):
+        sav = readsav(file_sav)
+        return sav[self.name_data].copy()
+
+
+
+class Reader(object):
+    def __call__(self, data):
+        return np.load(data)["data"]
+
+class RandomCrop(object):
+    def __init__(self, patch_size):
+        self.patch_size = patch_size
+    def __call__(self, data):
+        x, y = np.random.randint(2048-1024, 2048+1024-self.patch_size, 2)
+        return data[x:x+self.patch_size, y:y+self.patch_size]
+
+class Normalize(object):
+    def __init__(self, minmax):
+        self.minmax = minmax
+    def __call__(self, data):
+        return data/self.minmax
+
+class Cast(object):
+    def __call__(self, data):
+        return torch.from_numpy(data.astype(np.float32))
+
+
+class BaseDataset(data.Dataset):
+    def __init__(self, opt):
+        if opt.is_train == True :
+            pattern = "%s/train/%s" % (opt.path_data, opt.pattern)
+        else :
+            pattern = "%s/test/%s" % (opt.path_data, opt.pattern)
+        self.list_data = sorted(glob(pattern))
+        print(pattern)
+        self.nb_data = len(self.list_data)
+
+        self.reader = Reader()
+        self.random_crop = RandomCrop(opt.patch_size)
+        self.compose = Compose([Normalize(opt.minmax), Cast()])
+        
+    def __len__(self):
+        return self.nb_data
+
+
+class GaussianDataset(BaseDataset):
+    def __init__(self, opt):
+        super(GaussianDataset, self).__init__(opt)
+        self.fit_gaussian = FitGaussian()
+        self.generate_gaussian = GenerateGaussian()
+
+    def __getitem__(self, idx):
+        data = self.reader(self.list_data[idx])
+        patch = self.random_crop(data)[None, :, :]
+        popt = self.fit_gaussian(patch)
+        noise = self.generate_gaussian(loc=popt[1], scale=popt[2], size=patch.shape)
+        gaussian = patch.copy() + noise.copy()
+        
+        patch = self.compose(patch)
+        noise = self.compose(noise)
+        gaussian = self.compose(gaussian)
+
+        return patch, noise, gaussian
+
+
+
+
 
 
 class FitMultiGaussian(object):
@@ -59,85 +141,48 @@ class FitMultiGaussian(object):
         return popt_negative, popt_positive
 
 
-class GenerateGaussian(object):
-    def __call__(self, loc, scale, size):
-        return np.random.normal(loc=loc, scale=scale, size=size)
 
-class Normalize(object):
-    def __init__(self, minmax):
-        self.minmax = minmax
-    def __call__(self, data):
-        return data/self.minmax
 
-class ReadFits(object):
-    def __call__(self, fits):
-        return Map(fits).data.astype(np.float64)
     
-class ReadSav(object):
-    def __init__(self, name_data):
-        self.name_data = name_data
-    def __call__(self, file_sav):
-        sav = readsav(file_sav)
-        return sav[self.name_data].copy()
+# class BaseDataset(data.Dataset):
+#     def __init__(self, opt):
+#         if opt.name_data in ["M_45s", "M_720s"] :
+#             ext = "fits"
+#             self.reader = ReadFits()
+#             pattern = '%s/%s'%(opt.root_data, opt.name_data)
+#             self.fit_minmax = 30.
+#         elif opt.name_data in ["BT", "BR", "BP"] :
+#             ext = "sav"
+#             self.reader = ReadSav(opt.name_data)
+#             pattern = '%s/B_720s'%(opt.root_data)
+#             self.fit_minmax = 100
+#         print(ext)
+#         if opt.is_train == True :
+#             pattern = '%s/train/*.%s'%(pattern, ext)
+#         else :
+#             pattern = '%s/%s/*.%s'%(pattern, ext)
+#         self.list_data = glob(pattern)
+#         self.nb_data = len(self.list_data)
+
+#         self.random_crop = RandomCrop(opt.patch_size)
+#         self.compose = Compose([Normalize(opt.minmax), Cast()])
         
-
-class Cast(object):
-    def __call__(self, data):
-        return torch.from_numpy(data.astype(np.float32))
-
-class RandomCrop(object):
-    def __init__(self, patch_size):
-        self.patch_size = patch_size
-    def __call__(self, data):
-        x, y = np.random.randint(2048-512, 2048+512-self.patch_size, 2)
-        return data[x:x+self.patch_size, y:y+self.patch_size]
-    
-class BaseDataset(data.Dataset):
-    def __init__(self, opt):
-        if opt.name_data in ["M_45s", "M_720s"] :
-            ext = "fits"
-            self.reader = ReadFits()
-            pattern = '%s/%s'%(opt.root_data, opt.name_data)
-            self.fit_minmax = 30.
-        elif opt.name_data in ["BT", "BR", "BP"] :
-            ext = "sav"
-            self.reader = ReadSav(opt.name_data)
-            pattern = '%s/B_720s'%(opt.root_data)
-            self.fit_minmax = 100
-        print(ext)
-        if opt.is_train == True :
-            pattern = '%s/train/*.%s'%(pattern, ext)
-        else :
-            pattern = '%s/%s/*.%s'%(pattern, ext)
-        self.list_data = glob(pattern)
-        self.nb_data = len(self.list_data)
-
-        self.random_crop = RandomCrop(opt.patch_size)
-        self.compose = Compose([Normalize(opt.minmax), Cast()])
-        
-    def __len__(self):
-        return self.nb_data
+#     def __len__(self):
+#         return self.nb_data
 
 
 
-class GaussianDataset(BaseDataset):
-    def __init__(self, opt):
-        super(GaussianDataset, self).__init__(opt)
-        self.fit_gaussian = FitGaussian()
-        self.generate_gaussian = GenerateGaussian()
 
-    def __getitem__(self, idx):
-        data = self.reader(self.list_data[idx])
-        patch = self.random_crop(data)[None, :, :]
-        popt = self.fit_gaussian(patch)
-        noise = self.generate_gaussian(loc=popt[1], scale=popt[2], size=patch.shape)
-        gaussian = patch.copy() + noise.copy()
-        
-        patch = self.compose(patch)
-        noise = self.compose(noise)
-        gaussian = self.compose(gaussian)
 
-        return patch, noise, gaussian
+
+
+
+
+
+
+
+
+
 
 class MultiGaussianDataset(BaseDataset):
     def __init__(self, opt):
@@ -179,7 +224,9 @@ if __name__ == "__main__" :
 
 
     opt = TrainOption().parse()
-    dataloader, network = define_dataset_and_model(opt)
+    dataset = GaussianDataset(opt)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=opt.batch_size, num_workers=opt.num_workers)
+    print(len(dataset), len(dataloader))
 
     imgs = []
 
