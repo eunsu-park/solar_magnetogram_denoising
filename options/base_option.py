@@ -49,23 +49,23 @@ class BaseOption():
             opt.minmax = 1000.
 
         elif opt.name_data == "inclination" :
-            opt.path_data = "%s/B_720s" % (opt.root_data)
-            opt.pattern = "*.inclination.npy"
+            opt.path_data = "%s/inclination" % (opt.root_data)
+            opt.pattern = "*.inclination.npz"
             opt.minmax = 1000.
 
         elif opt.name_data == "azimuth" :
-            opt.path_data = "%s/B_720s" % (opt.root_data)
-            opt.pattern = "*.azimuth.npy"
+            opt.path_data = "%s/azimuth" % (opt.root_data)
+            opt.pattern = "*.azimuth.npz"
             opt.minmax = 1000.
 
         elif opt.name_data == "disambig" :
-            opt.path_data = "%s/B_720s" % (opt.root_data)
-            opt.pattern = "*.disambig.npy"
+            opt.path_data = "%s/disambig" % (opt.root_data)
+            opt.pattern = "*.disambig.npz"
             opt.minmax = 1000.
 
         elif opt.name_data == "field" :
-            opt.path_data = "%s/B_720s" % (opt.root_data)
-            opt.pattern = "*.field.npy"
+            opt.path_data = "%s/field" % (opt.root_data)
+            opt.pattern = "*.field.npz"
             opt.minmax = 1000.
 
         elif opt.name_data == "vector_r" :
