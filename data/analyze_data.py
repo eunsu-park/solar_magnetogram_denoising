@@ -121,6 +121,23 @@ def custom_plot(data, hist, x, title, vmin, vmax):
     ax2.set_title("Histogram")
     plt.tight_layout()
 
+def analyze_los_45(f, proc_nan=False):
+    data = reader(f, proc_nan=proc_nan)
+    x = np.linspace(-150, 150, 300)
+    hist = np.histogram(data.flatten(), bins=np.linspace(-150, 150, 301))
+    custom_plot(data, hist[0], x, title="Line-of-sight (45s)", vmin=-30, vmax=30)
+    plt.savefig("los_45.png", dpi=200)
+    plt.close()
+    return data, hist[0], x
+
+def analyze_los_720(f, proc_nan=False):
+    data = reader(f, proc_nan=proc_nan)
+    x = np.linspace(-150, 150, 300)
+    hist = np.histogram(data.flatten(), bins=np.linspace(-150, 150, 301))
+    custom_plot(data, hist[0], x, title="Line-of-sight (720s)", vmin=-30, vmax=30)
+    plt.savefig("los_720.png", dpi=200)
+    plt.close()
+    return data, hist[0], x
 
 def analyze_inclination(f, proc_nan=False):
     data = reader(f, proc_nan=proc_nan)
@@ -153,7 +170,7 @@ def analyze_field(f, proc_nan=False):
     data = reader(f, proc_nan=proc_nan)
     x = np.linspace(0, 3000, 3000)
     hist = np.histogram(data.flatten(), bins=np.linspace(0, 3000, 3001))
-    custom_plot(data, hist[0], x, title="Field", vmin=0, vmax=3000)
+    custom_plot(data, hist[0], x, title="Field", vmin=0, vmax=500)
     plt.savefig("field.png", dpi=200)
     plt.close()
     return data, hist[0], x
@@ -184,6 +201,16 @@ if __name__ == "__main__" :
     f_azimuth = "hmi.2011-01-01-00-00-00.azimuth.npz"
     f_disambig = "hmi.2011-01-01-00-00-00.disambig.npz"
     f_field = "hmi.2011-01-01-00-00-00.field.npz"
+
+    data, hist, x = analyze_los_45(f_los_45)
+    vmin = np.nanmin(data)
+    vmax = np.nanmax(data)
+    print(vmin, vmax)
+
+    data, hist, x = analyze_los_720(f_los_720)
+    vmin = np.nanmin(data)
+    vmax = np.nanmax(data)
+    print(vmin, vmax)
 
     data, hist, x = analyze_inclination(f_inclination)
     vmin = np.nanmin(data)
