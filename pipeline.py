@@ -57,10 +57,21 @@ class RandomCrop(object):
         return data[x:x+self.patch_size, y:y+self.patch_size]
 
 class Normalize(object):
-    def __init__(self, minmax):
-        self.minmax = minmax
+    def __init__(self, name_data):
+        if name_data in ["los", "los_45", "los_720"] :
+            norm = self.norm_los
+        if name_data in ["inclination", "azimuth"] :
+            norm =self.norm_angle
+
+    def norm_los(self, data):
+        return data/1000.
+    
+    def norm_angle(self, data):
+        return data/90. - 1.
+    
     def __call__(self, data):
-        return data/self.minmax
+        return self.norm(data)
+
 
 class Cast(object):
     def __call__(self, data):
@@ -79,7 +90,7 @@ class BaseDataset(data.Dataset):
 
         self.reader = Reader()
         self.random_crop = RandomCrop(opt.patch_size)
-        self.compose = Compose([Normalize(opt.minmax), Cast()])
+        self.compose = Compose([Normalize(opt.name_data), Cast()])
         
     def __len__(self):
         return self.nb_data
