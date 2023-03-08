@@ -36,51 +36,62 @@ class BaseOption():
         if opt.name_data == "los_45" :
             opt.path_data = "%s/los_45" % (opt.root_data)
             opt.pattern = "*.los_45.npz"
-            opt.minmax = 1000.
+            opt.vmin = -30.
+            opt.vmax = 30.
 
         elif opt.name_data == "los_720" :
             opt.path_data = "%s/los_720" % (opt.root_data)
             opt.pattern = "*.los_720.npz"
-            opt.minmax = 1000.
+            opt.vmin = -30.
+            opt.vmax = 30.
 
         elif opt.name_data == "los" :
             opt.path_data = "%s/los_*" % (opt.root_data)
             opt.pattern = "*.los_*.npz"
-            opt.minmax = 1000.
+            opt.vmin = -30.
+            opt.vmax = 30.
 
         elif opt.name_data == "inclination" :
             opt.path_data = "%s/inclination" % (opt.root_data)
             opt.pattern = "*.inclination.npz"
-            opt.minmax = 1000.
+            opt.vmin = 0.
+            opt.vmax = 180.
 
         elif opt.name_data == "azimuth" :
             opt.path_data = "%s/azimuth" % (opt.root_data)
             opt.pattern = "*.azimuth.npz"
-            opt.minmax = 1000.
+            opt.vmin = 0.
+            opt.vmax = 180.
+
 
         elif opt.name_data == "disambig" :
             opt.path_data = "%s/disambig" % (opt.root_data)
             opt.pattern = "*.disambig.npz"
-            opt.minmax = 1000.
+            opt.vmin = 0.
+            opt.vmax = 10.
 
         elif opt.name_data == "field" :
             opt.path_data = "%s/field" % (opt.root_data)
             opt.pattern = "*.field.npz"
-            opt.minmax = 1000.
+            opt.vmin = 0.
+            opt.vmax = 500.
 
         elif opt.name_data == "vector_r" :
-            opt.path_data = "%s/Vector" % (opt.root_data)
-            opt.pattern = "*vector_r.npy"
-            opt.minmax = 1000.
+            opt.path_data = "%s/vector_r" % (opt.root_data)
+            opt.pattern = "*.vector_r.npz"
+            opt.vmin = -30.
+            opt.vmax = 30.
 
         elif opt.name_data == "vector_t" :
-            opt.path_data = "%s/Vector" % (opt.root_data)
-            opt.pattern = "*.sav"
-            opt.minmax = 1000.
+            opt.path_data = "%s/vector_t" % (opt.root_data)
+            opt.pattern = "*.vector_t.npz"
+            opt.vmin = -150.
+            opt.vmax = 150.
 
         elif opt.name_data == "vector_p" :
-            opt.path_data = "%s/Vector" % (opt.root_data)
-            opt.pattern = "*.sav"
-            opt.minmax = 1000.
+            opt.path_data = "%s/vector_p" % (opt.root_data)
+            opt.pattern = "*.vector_p.npz"
+            opt.vmin = -150.
+            opt.vmax = 150.
 
         return opt
