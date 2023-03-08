@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import curve_fit
+from matplotlib.gridspec import GridSpec
 
 
 def func(x, a, b, c):
@@ -88,7 +89,7 @@ def multiplot(data, minmax):
 
 
 def reader(f, proc_nan=False):
-    data = np.load(f)["data"]
+    data = np.load(f)["data"][2048-1024:2048+1024, 2048-1024:2048+1024]
     if proc_nan == True :
         data[np.isnan(data)] = 0.
     return data
@@ -97,25 +98,80 @@ def analyze_los_45(f):
     data = reader(f)
 
 
-def imshow(data, vmin, vmax):
+def imshow(data, vmin, vmax, title):
     plt.imshow(data, vmin=vmin, vmax=vmax, cmap="gray")
-    plt.show()
+    plt.title(title)
+    #plt.show()
+
+def histshow(x, hist, title):
+    plt.plot(x, hist)
+    plt.title(title)
+    #plt.show()
+
+
+def custom_plot(data, hist, x, title, vmin, vmax):
+    fig = plt.figure(figsize=(20, 8))
+    plt.suptitle(title)
+    gs = GridSpec(1, 3, figure=fig)
+    ax1 = fig.add_subplot(gs[0,0])
+    ax2 = fig.add_subplot(gs[0,1:])
+    ax1.imshow(data, vmin=vmin, vmax=vmax, cmap="gray")
+    ax1.set_title("Image")
+    ax2.plot(x, hist)
+    ax2.set_title("Histogram")
+    plt.tight_layout()
+
 
 def analyze_inclination(f, proc_nan=False):
     data = reader(f, proc_nan=proc_nan)
-    return data
+    x = np.linspace(0, 180, 180)
+    hist = np.histogram(data.flatten(), bins=np.linspace(0, 180, 181))
+    custom_plot(data, hist[0], x, title="Inclination", vmin=0, vmax=180)
+    plt.savefig("inclination.png", dpi=200)
+    plt.close()
+    return data, hist[0], x
 
 def analyze_azimuth(f, proc_nan=False):
     data = reader(f, proc_nan=proc_nan)
-    return data
+    x = np.linspace(0, 180, 180)
+    hist = np.histogram(data.flatten(), bins=np.linspace(0, 180, 181))
+    custom_plot(data, hist[0], x, title="Azimuth", vmin=0, vmax=180)
+    plt.savefig("azimuth.png", dpi=200)
+    plt.close()
+    return data, hist[0], x
 
 def analyze_disambig(f, proc_nan=False):
     data = reader(f, proc_nan=proc_nan)
-    return data
+    x = np.linspace(0, 10, 10)
+    hist = np.histogram(data.flatten(), bins=np.linspace(0, 10, 11))
+    custom_plot(data, hist[0], x, title="Disambig", vmin=0, vmax=10)
+    plt.savefig("disambig.png", dpi=200)
+    plt.close()
+    return data, hist[0], x
 
 def analyze_field(f, proc_nan=False):
     data = reader(f, proc_nan=proc_nan)
-    return data
+    x = np.linspace(0, 3000, 3000)
+    hist = np.histogram(data.flatten(), bins=np.linspace(0, 3000, 3001))
+    custom_plot(data, hist[0], x, title="Field", vmin=0, vmax=3000)
+    plt.savefig("field.png", dpi=200)
+    plt.close()
+    return data, hist[0], x
+
+
+
+
+class FitGaussian(object):
+    def __init__(self, minmax=100):
+        self.minmax=minmax
+    def __call__(self, data):
+        tmp = np.histogram(data.flatten(), bins=np.linspace(-self.minmax, self.minmax, self.minmax+1))
+        x = np.linspace(-self.minmax+0.5, self.minmax-0.5, self.minmax)
+        popt, _ = curve_fit(func, x, tmp[0])
+        amp = popt[0]
+        loc = popt[1]
+        scale = abs(popt[2])
+        return (amp, loc, scale), tmp
 
 if __name__ == "__main__" :
     from glob import glob
@@ -129,31 +185,35 @@ if __name__ == "__main__" :
     f_disambig = "hmi.2011-01-01-00-00-00.disambig.npz"
     f_field = "hmi.2011-01-01-00-00-00.field.npz"
 
-    data = analyze_inclination(f_inclination)
+    data, hist, x = analyze_inclination(f_inclination)
     vmin = np.nanmin(data)
     vmax = np.nanmax(data)
     print(vmin, vmax)
-    imshow(data, vmin=vmin, vmax=vmax)
 
-    data = analyze_azimuth(f_azimuth)
+    data, hist, x = analyze_azimuth(f_azimuth)
     vmin = np.nanmin(data)
     vmax = np.nanmax(data)
     print(vmin, vmax)
-    imshow(data, vmin=vmin, vmax=vmax)
 
-    data = analyze_disambig(f_disambig)
+    data, hist, x = analyze_disambig(f_disambig)
+    vmin = np.nanmin(data)
+    vmax = np.nanmax(data)
+    print(vmin, vmax)    
+
+    data, hist, x = analyze_field(f_field)
     vmin = np.nanmin(data)
     vmax = np.nanmax(data)
     print(vmin, vmax)
-    imshow(data, vmin=vmin, vmax=vmax)
-
-    data = analyze_field(f_field)
-    vmin = np.nanmin(data)
-    vmax = np.nanmax(data)
-    print(vmin, vmax)
-    imshow(data, vmin=vmin, vmax=vmax)
 
 
+    # inclination = np.load(f_inclination)["data"][2048-1024:2048+1024, 2048-1024:2048+1024]
+    # field = np.load(f_field)["data"][2048-1024:2048+1024, 2048-1024:2048+1024]
+
+    # x = np.linspace(0, 180, 180)
+    # tmp = inclination[np.abs(field) > 1000]
+    # hist = np.histogram(tmp.flatten(), bins=np.linspace(0, 180, 181))
+    # plt.plot(x, hist[0])
+    # plt.show()
 
 
     # sav = readsav(h)
