@@ -2,17 +2,9 @@ import torch
 from torch.utils import data
 import numpy as np
 from glob import glob
-from sunpy.map import Map
-import torch.nn.functional as F
 from torchvision.transforms import Compose
 from scipy.optimize import curve_fit
-import matplotlib.pyplot as plt
-from scipy.io import readsav
 
-
-class GenerateGaussian(object):
-    def __call__(self, loc, scale, size):
-        return np.random.normal(loc=loc, scale=scale, size=size)
 
 def func(x, a, b, c):
     return a*np.exp(-(x-b)**2/(2*c**2))
@@ -31,18 +23,41 @@ class FitGaussian(object):
         return amp, loc, scale
 
 
+class FitMultiGaussian(object):
+    def __init__(self, minmax=150):
+        self.minmax=minmax
 
-class ReadFits(object):
-    def __call__(self, fits):
-        return Map(fits).data.astype(np.float64)
-    
-class ReadSav(object):
-    def __init__(self, name_data):
-        self.name_data = name_data
-    def __call__(self, file_sav):
-        sav = readsav(file_sav)
-        return sav[self.name_data].copy()
+    def fit_negative(self, data_):
+        w = np.where(data_ <= 0.)
+        data = data_[w]
+        tmp = np.histogram(data.flatten(), bins=np.linspace(-self.minmax, self.minmax, self.minmax+1))
+        x = np.linspace(-self.minmax+0.5, self.minmax-0.5, self.minmax)
+        popt, _ = curve_fit(func, x, tmp[0])
+        amp = popt[0]
+        loc = popt[1]
+        scale = abs(popt[2])
+        return amp, loc, scale
 
+    def fit_positive(self, data_):
+        w = np.where(data_ >= 0.)
+        data = data_[w]
+        tmp = np.histogram(data.flatten(), bins=np.linspace(-self.minmax, self.minmax, self.minmax+1))
+        x = np.linspace(-self.minmax+0.5, self.minmax-0.5, self.minmax)
+        popt, _ = curve_fit(func, x, tmp[0])
+        amp = popt[0]
+        loc = popt[1]
+        scale = abs(popt[2])
+        return amp, loc, scale
+
+    def __call__(self, data):
+        popt_negative = self.fit_negative(data)
+        popt_positive = self.fit_positive(data)
+        return popt_negative, popt_positive
+
+
+class GenerateGaussian(object):
+    def __call__(self, loc, scale, size):
+        return np.random.normal(loc=loc, scale=scale, size=size)
 
 
 class Reader(object):
@@ -58,12 +73,12 @@ class RandomCrop(object):
 
 class Normalize(object):
     def __init__(self, name_data):
-        if name_data in ["los", "los_45", "los_720"] :
-            norm = self.norm_los
-        if name_data in ["inclination", "azimuth"] :
-            norm =self.norm_angle
+        if name_data in ["los", "los_45", "los_720", "vector_r", "vector_t", "vector_p"] :
+            self.norm = self.norm_gauss
+        elif name_data in ["inclination", "azimuth"] :
+            self.norm = self.norm_angle
 
-    def norm_los(self, data):
+    def norm_gauss(self, data):
         return data/1000.
     
     def norm_angle(self, data):
@@ -119,37 +134,40 @@ class GaussianDataset(BaseDataset):
 
 
 
+class MultiGaussianDataset(BaseDataset):
+    def __init__(self, opt):
+        super(MultiGaussianDataset, self).__init__(opt)
+        self.fit_gaussian = FitMultiGaussian()
+        self.generate_gaussian = GenerateGaussian()
 
-class FitMultiGaussian(object):
-    def __init__(self, minmax=150):
-        self.minmax=minmax
+    def __getitem__(self, idx):
+        data = self.reader(self.list_data[idx])
+        patch = self.random_crop(data)[None, :, :]
+        popt_negative, popt_positive = self.fit_gaussian(patch)
+        # noise_negative = self.generate_gaussian(
+        #     loc=popt_negative[1], scale=popt_negative[2], size=patch.shape)
+        # noise_positive = self.generate_gaussian(
+        #     loc=popt_positive[1], scale=popt_positive[2], size=patch.shape)
+        # noise = noise_negative + noise_positive
+        # gaussian = patch.copy() + noise.copy()
 
-    def fit_negative(self, data_):
-        w = np.where(data_ <= 0.)
-        data = data_[w]
-        tmp = np.histogram(data.flatten(), bins=np.linspace(-self.minmax, self.minmax, self.minmax+1))
-        x = np.linspace(-self.minmax+0.5, self.minmax-0.5, self.minmax)
-        popt, _ = curve_fit(func, x, tmp[0])
-        amp = popt[0]
-        loc = popt[1]
-        scale = abs(popt[2])
-        return amp, loc, scale
+        loc = popt_negative[1] + popt_positive[1]
+        scale = (abs(popt_negative[1]) + abs(popt_positive[1]))/2.
+        noise = np.random.normal(loc=loc, scale=scale, size=patch.shape)
+        gaussian = patch.copy() + noise.copy()
 
-    def fit_positive(self, data_):
-        w = np.where(data_ >= 0.)
-        data = data_[w]
-        tmp = np.histogram(data.flatten(), bins=np.linspace(-self.minmax, self.minmax, self.minmax+1))
-        x = np.linspace(-self.minmax+0.5, self.minmax-0.5, self.minmax)
-        popt, _ = curve_fit(func, x, tmp[0])
-        amp = popt[0]
-        loc = popt[1]
-        scale = abs(popt[2])
-        return amp, loc, scale
+        patch = self.compose(patch)
+        noise = self.compose(noise)
+        gaussian = self.compose(gaussian)
 
-    def __call__(self, data):
-        popt_negative = self.fit_negative(data)
-        popt_positive = self.fit_positive(data)
-        return popt_negative, popt_positive
+        return patch, noise, gaussian
+
+
+
+
+
+
+
 
 
 
@@ -192,36 +210,6 @@ class FitMultiGaussian(object):
 
 
 
-
-
-
-class MultiGaussianDataset(BaseDataset):
-    def __init__(self, opt):
-        super(MultiGaussianDataset, self).__init__(opt)
-        self.fit_gaussian = FitMultiGaussian()
-        self.generate_gaussian = GenerateGaussian()
-
-    def __getitem__(self, idx):
-        data = self.reader(self.list_data[idx])
-        patch = self.random_crop(data)[None, :, :]
-        popt_negative, popt_positive = self.fit_gaussian(patch)
-        # noise_negative = self.generate_gaussian(
-        #     loc=popt_negative[1], scale=popt_negative[2], size=patch.shape)
-        # noise_positive = self.generate_gaussian(
-        #     loc=popt_positive[1], scale=popt_positive[2], size=patch.shape)
-        # noise = noise_negative + noise_positive
-        # gaussian = patch.copy() + noise.copy()
-
-        loc = popt_negative[1] + popt_positive[1]
-        scale = (abs(popt_negative[1]) + abs(popt_positive[1]))/2.
-        noise = np.random.normal(loc=loc, scale=scale, size=patch.shape)
-        gaussian = patch.copy() + noise.copy()
-
-        patch = self.compose(patch)
-        noise = self.compose(noise)
-        gaussian = self.compose(gaussian)
-
-        return patch, noise, gaussian
 
 
 
