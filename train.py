@@ -109,15 +109,12 @@ while epochs < epochs_max :
             snap = np.hstack([inp, gen, noise])
             snap = norm(snap, forward=False)
 
+            fig = plt.figure(figsize=(9, 3))
             plt.imshow(snap, vmin=opt.vmin, vmax=opt.vmax, cmap="gray")
-            plt.savefig("./%s_latest.png" % (opt.name_data))
+            plt.tight_layout()
+            plt.savefig("./%s_latest.png" % (opt.name_data), dpi=200)
             plt.close()
 
-#            snap = snap * opt.minmax
-#            snap = (snap + 30.) * (255./60.)
-#            snap = np.clip(snap, 0, 255).astype(np.uint8)
-#            imsave("./%s_latest.png" % (opt.name_data), snap)
-            
             network.train()
 
             losses = []
@@ -140,9 +137,10 @@ while epochs < epochs_max :
     snap = np.hstack([inp, gen, noise])
     snap = norm(snap, forward=False)
 
-
+    fig = plt.figure(figsize=(9, 3))
     plt.imshow(snap, vmin=opt.vmin, vmax=opt.vmax, cmap="gray")
-    plt.savefig("%s/%04d.png" % (path_snap, epochs))
+    plt.tight_layout()
+    plt.savefig("%s/%04d.png" % (path_snap, epochs), dpi=200)
     plt.close()
 
     # snap = snap * opt.minmax
