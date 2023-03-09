@@ -131,9 +131,6 @@ class GaussianDataset(BaseDataset):
         return patch, noise, gaussian
 
 
-
-
-
 class MultiGaussianDataset(BaseDataset):
     def __init__(self, opt):
         super(MultiGaussianDataset, self).__init__(opt)
@@ -144,16 +141,11 @@ class MultiGaussianDataset(BaseDataset):
         data = self.reader(self.list_data[idx])
         patch = self.random_crop(data)[None, :, :]
         popt_negative, popt_positive = self.fit_gaussian(patch)
-        # noise_negative = self.generate_gaussian(
-        #     loc=popt_negative[1], scale=popt_negative[2], size=patch.shape)
-        # noise_positive = self.generate_gaussian(
-        #     loc=popt_positive[1], scale=popt_positive[2], size=patch.shape)
-        # noise = noise_negative + noise_positive
-        # gaussian = patch.copy() + noise.copy()
-
-        loc = popt_negative[1] + popt_positive[1]
-        scale = (abs(popt_negative[1]) + abs(popt_positive[1]))/2.
-        noise = np.random.normal(loc=loc, scale=scale, size=patch.shape)
+        noise_negative = self.generate_gaussian(
+            loc=popt_negative[1], scale=popt_negative[2], size=patch.shape)
+        noise_positive = self.generate_gaussian(
+            loc=popt_positive[1], scale=popt_positive[2], size=patch.shape)
+        noise = noise_negative + noise_positive
         gaussian = patch.copy() + noise.copy()
 
         patch = self.compose(patch)
@@ -161,56 +153,6 @@ class MultiGaussianDataset(BaseDataset):
         gaussian = self.compose(gaussian)
 
         return patch, noise, gaussian
-
-
-
-
-
-
-
-
-
-
-
-    
-# class BaseDataset(data.Dataset):
-#     def __init__(self, opt):
-#         if opt.name_data in ["M_45s", "M_720s"] :
-#             ext = "fits"
-#             self.reader = ReadFits()
-#             pattern = '%s/%s'%(opt.root_data, opt.name_data)
-#             self.fit_minmax = 30.
-#         elif opt.name_data in ["BT", "BR", "BP"] :
-#             ext = "sav"
-#             self.reader = ReadSav(opt.name_data)
-#             pattern = '%s/B_720s'%(opt.root_data)
-#             self.fit_minmax = 100
-#         print(ext)
-#         if opt.is_train == True :
-#             pattern = '%s/train/*.%s'%(pattern, ext)
-#         else :
-#             pattern = '%s/%s/*.%s'%(pattern, ext)
-#         self.list_data = glob(pattern)
-#         self.nb_data = len(self.list_data)
-
-#         self.random_crop = RandomCrop(opt.patch_size)
-#         self.compose = Compose([Normalize(opt.minmax), Cast()])
-        
-#     def __len__(self):
-#         return self.nb_data
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 if __name__ == "__main__" :
@@ -223,12 +165,9 @@ if __name__ == "__main__" :
 
 
     opt = TrainOption().parse()
-    dataset = GaussianDataset(opt)
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=opt.batch_size, num_workers=opt.num_workers)
-    print(len(dataset), len(dataloader))
+    dataloader, network = define_dataset_and_model(opt)
 
     imgs = []
-
     fig = plt.figure(figsize=(9, 3))
     for idx, (patch, noise, gaussian) in enumerate(dataloader):
         patch = patch.numpy()
