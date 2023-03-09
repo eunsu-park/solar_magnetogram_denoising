@@ -75,17 +75,32 @@ class Normalize(object):
     def __init__(self, name_data):
         if name_data in ["los", "los_45", "los_720", "vector_r", "vector_t", "vector_p"] :
             self.norm = self.norm_gauss
+            self.denorm = self.denorm_gauss
         elif name_data in ["inclination", "azimuth"] :
             self.norm = self.norm_angle
+            self.denorm = self.denorm_angle
 
     def norm_gauss(self, data):
         return data/1000.
     
+    def denorm_gauss(self, data):
+        return data * 1000.
+    
     def norm_angle(self, data):
         return data/90. - 1.
     
-    def __call__(self, data):
-        return self.norm(data)
+    def denorm_angle(self, data):
+        return np.clip(data+1, 0, None) * 90
+    
+    def __call__(self, data, forward=True):
+        if forward == True :
+            return self.norm(data)
+        else :
+            return self.denorm(data)
+
+
+
+
 
 
 class Cast(object):
@@ -166,6 +181,7 @@ if __name__ == "__main__" :
 
     opt = TrainOption().parse()
     dataloader, network = define_dataset_and_model(opt)
+    norm = Normalize(opt.name_data)
 
     imgs = []
     fig = plt.figure(figsize=(9, 3))
@@ -180,11 +196,9 @@ if __name__ == "__main__" :
         gaussian = gaussian[0][0]
 
         img = np.hstack([patch, noise, gaussian])
-        img = img * opt.minmax
-        img = (img.copy() + 30.) * (255./60.)
-        img = np.clip(img, 0, 255).astype(np.uint8)
+        img = norm(img, forward=False)
 
-        plot = plt.imshow(img, cmap='gray', animated=True)
+        plot = plt.imshow(img, vmin=opt.vmin, vmax=opt.vmax, cmap='gray', animated=True)
         plt.tight_layout()
         imgs.append([plot])
 

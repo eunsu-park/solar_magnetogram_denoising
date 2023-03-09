@@ -18,7 +18,7 @@ def define_dataset_and_model(opt):
     from models.pix2pix_unet import UnetGenerator as PUNet, init_weights
     if opt.name_data in ["los", "los_45", "los_720", "vector_r"] :
         dataset = GaussianDataset(opt)
-    elif opt.name_data in ["vector_t, vector_p"] :
+    elif opt.name_data in ["vector_t", "vector_p"] :
         dataset = MultiGaussianDataset(opt)
 #    elif opt.name_data in ["BT", "BP"] :
 #        dataset = MultiGaussianDataset(opt)

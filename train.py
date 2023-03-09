@@ -17,6 +17,7 @@ torch.backends.cudnn.benchmark = False
 import torch.nn as nn
 import os, time
 from imageio import imsave
+import matplotlib.pyplot as plt
 
 os.environ["CUDA_VISIBLE_DEVICES"] = opt.gpu_ids
 cuda = torch.cuda.device_count() > 0
@@ -34,6 +35,8 @@ path_logger = "./%s.log" % (opt.name_data)
 logger = open(path_logger, "w")
 logger.close()
 
+from pipeline import Normalize
+norm = Normalize(opt.name_data)
 
 ## Load Dataset ## 
 from utils.others import get_loss_function, define_dataset_and_model
@@ -104,10 +107,16 @@ while epochs < epochs_max :
             gen = inp - noise
 
             snap = np.hstack([inp, gen, noise])
-            snap = snap * opt.minmax
-            snap = (snap + 30.) * (255./60.)
-            snap = np.clip(snap, 0, 255).astype(np.uint8)
-            imsave("./%s_latest.png" % (opt.name_data), snap)
+            snap = norm(snap, forward=False)
+
+            plt.imshow(snap, vmin=opt.vmin, vmax=opt.vmax, cmap="gray")
+            plt.savefig("./%s_latest.png" % (opt.name_data))
+            plt.close()
+
+#            snap = snap * opt.minmax
+#            snap = (snap + 30.) * (255./60.)
+#            snap = np.clip(snap, 0, 255).astype(np.uint8)
+#            imsave("./%s_latest.png" % (opt.name_data), snap)
             
             network.train()
 
@@ -129,10 +138,17 @@ while epochs < epochs_max :
     gen = inp - noise
 
     snap = np.hstack([inp, gen, noise])
-    snap = snap * opt.minmax
-    snap = (snap + 30.) * (255./60.)
-    snap = np.clip(snap, 0, 255).astype(np.uint8)
-    imsave("%s/%04d.png" % (path_snap, epochs), snap)
+    snap = norm(snap, forward=False)
+
+
+    plt.imshow(snap, vmin=opt.vmin, vmax=opt.vmax, cmap="gray")
+    plt.savefig("%s/%04d.png" % (path_snap, epochs))
+    plt.close()
+
+    # snap = snap * opt.minmax
+    # snap = (snap + 30.) * (255./60.)
+    # snap = np.clip(snap, 0, 255).astype(np.uint8)
+    # imsave("%s/%04d.png" % (path_snap, epochs), snap)
     
     network.train()
 

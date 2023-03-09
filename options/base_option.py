@@ -79,8 +79,8 @@ class BaseOption():
         elif opt.name_data == "vector_r" :
             opt.path_data = "%s/vector_r" % (opt.root_data)
             opt.pattern = "*.vector_r.npz"
-            opt.vmin = -30.
-            opt.vmax = 30.
+            opt.vmin = -100.
+            opt.vmax = 100.
 
         elif opt.name_data == "vector_t" :
             opt.path_data = "%s/vector_t" % (opt.root_data)
