@@ -113,7 +113,7 @@ while epochs < epochs_max :
             plt.imshow(snap, vmin=opt.vmin, vmax=opt.vmax, cmap="gray")
             plt.tight_layout()
             plt.savefig("./%s_latest.png" % (opt.name_data), dpi=200)
-            plt.close()
+            plt.close("all")
 
             network.train()
 
@@ -141,7 +141,7 @@ while epochs < epochs_max :
     plt.imshow(snap, vmin=opt.vmin, vmax=opt.vmax, cmap="gray")
     plt.tight_layout()
     plt.savefig("%s/%04d.png" % (path_snap, epochs), dpi=200)
-    plt.close()
+    plt.close("all")
 
     # snap = snap * opt.minmax
     # snap = (snap + 30.) * (255./60.)
