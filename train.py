@@ -18,6 +18,8 @@ import torch.nn as nn
 import os, time
 from imageio import imsave
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
 
 os.environ["CUDA_VISIBLE_DEVICES"] = opt.gpu_ids
 cuda = torch.cuda.device_count() > 0
